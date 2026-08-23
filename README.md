@@ -103,10 +103,10 @@ enable/disable toggles for both trackers, icon size and spacing sliders, and a o
 
 - **None required.** Ace3 (AceGUI-3.0 + AceConfig-3.0) is bundled in `Libs\` — nothing else to
   install for the settings window to work.
-- **ClassicAPI** — optional. If present, Holyward uses it for live aura data (accurate buff
+- **ClassicAPI** — Holyward uses it for live aura data (accurate buff
   countdowns/icons on the Buff Tracker); without it, buff tracking falls back to a
   tooltip-scan method that still works but without live expiration timers.
-- **Nampower** — optional. If present, mouseover casting becomes queue-safe under the global
+- **Nampower** — Mouseover casting becomes queue-safe under the global
   cooldown (see "Mouseover casting" above). Without it, mouseover casting still works, just
   without that specific edge case covered.
 
