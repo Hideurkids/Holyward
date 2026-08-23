@@ -1,0 +1,1942 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Frame name="HolywardBarTimers" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="10" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="HolywardSpellTimerButton" relativeFrom="TOPLEFT">
+				<Offset>
+					<AbsDimension x="130" y="-80"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="HolywardTimer1Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer2Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer3Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer4Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer5Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer6Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer7Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer8Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer9Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer10Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer11Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer12Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer13Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer14Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer15Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer16Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer17Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer18Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer19Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer20Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer21Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer22Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer23Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer24Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer25Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer26Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer27Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer28Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer29Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer30Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer31Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer32Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer33Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer34Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer35Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer36Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer37Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer38Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer39Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer40Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer41Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer42Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer43Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer44Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer45Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer46Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer47Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer48Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer49Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="HolywardTimer50Icon" hidden="true">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3000" y="3000"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HolywardTarget1Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget2Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget3Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget4Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget5Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget6Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget7Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget8Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget9Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTarget10Text" inherits="TextStatusBarText" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer1Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer2Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer3Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer4Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer5Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer6Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer7Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer8Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer9Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer10Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer11Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer12Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer13Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer14Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer15Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer16Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer17Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer18Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer19Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer20Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer21Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer22Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer23Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer24Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer25Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer26Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer27Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer28Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer29Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer30Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer31Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer32Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer33Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer34Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer35Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer36Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer37Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer38Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer39Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer40Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer41Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer42Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer43Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer44Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer45Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer46Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer47Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer48Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer49Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HolywardTimer50Text" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="HolywardTimer1Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer2Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer3Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer4Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer5Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer6Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer7Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer8Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer9Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer10Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer11Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer12Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer13Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer14Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer15Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer16Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer17Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer18Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer19Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer20Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer21Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer22Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer23Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer24Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer25Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer26Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer27Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer28Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer29Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer30Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer31Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer32Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer33Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer34Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer35Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer36Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer37Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer38Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer39Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer40Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer41Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer42Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer43Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer44Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer45Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer46Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer47Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer48Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer49Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+			<Cooldown name="HolywardTimer50Cooldown" hidden="true">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="3000" y="3000"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Frame>
+</Ui>

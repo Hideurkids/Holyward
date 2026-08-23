@@ -1,0 +1,20 @@
+## Interface: 11200
+## Title: |CFFFFFFFFH|CFFFFF7DEo|CFFFFEFBEl|CFFFFE79Dy|CFFFFDF7Dw|CFFFFD75Ca|CFFFFD700r|CFFFFD700d|r
+## Notes: All-in-one |CFF9482C9Priest|r addon: spell timers, buff tracking, and quick access to essential abilities, all designed to streamline the Priest experience.
+## Version: 0.1.0
+## Author: Hideurkids
+## OptionalDeps: !!!ClassicAPI
+## Dependencies:
+## DefaultState:
+## SavedVariables:
+## SavedVariablesPerCharacter: HolywardConfig
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceCore-3.0\AceCore-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceGUI-3.0\widgets\widgets.xml
+Libs\AceConfigRegistry-3.0\AceConfigRegistry-3.0.xml
+Libs\AceConfigDialog-3.0\AceConfigDialog-3.0.xml
+Holyward.xml
+HolywardTimer.xml
+HolywardOptions.lua

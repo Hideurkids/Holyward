@@ -1,0 +1,2958 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="Localization.lua"/>
+	<Script file="Localization-functions-en.lua"/>
+	<Script file="Localization-dialog-en.lua"/>
+	<Script file="Speech.lua"/>
+	<Script file="Holyward.lua"/>
+	<Script file="HolywardInitialize.lua"/>
+	<Script file="HolywardMessage.lua"/>
+	<Script file="HolywardTimerFunction.lua"/>
+	<Script file="HolywardGraphicalTimer.lua"/>
+
+	<Frame name="Holyward_Variable_Frame" hidden="false">
+		<Scripts>
+			<OnUpdate>
+				Holyward_LoadVariables()
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Button name="HolywardSpellTimerButton" frameStrata="MEDIUM" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="120" y="340"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HolywardListSpells" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="HolywardSpellTimerButton">
+							<Offset>
+								<AbsDimension x="23" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:Hide();
+			</OnLoad>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "SpellTimer", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UseItem("Hearthstone", arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\SpellTimerButton-Normal"/>
+		<PushedTexture file="Interface\AddOns\Holyward\UI\SpellTimerButton-Pushed"/>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\SpellTimerButton-Highlight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="HolywardButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="58" y="58"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HolywardCount" inherits="GameFontNormal" text="">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="HolywardButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				Holyward_Toggle(arg1);
+			</OnClick>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Main", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnLoad>
+				Holyward_OnLoad();
+				HideUIPanel(this);
+			</OnLoad>
+			<OnUpdate>
+				Holyward_OnUpdate();
+			</OnUpdate>
+			<OnEvent>
+				Holyward_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\SphereCustom-01"/>
+	</Button>
+
+	<Button name="HolywardBuffMenuButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="HolywardButton" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="44" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "BuffMenu", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffMenu(arg1);
+			</OnClick>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Holy\BuffMenuButton-01">
+			<Size>
+				<AbsDimension x="31" y="31"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Holy\BuffMenuButton-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="31" y="31"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="HolywardBuffMenu1" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Buff", "ANCHOR_RIGHT", 9);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffCast(9, arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Fortitude-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Fortitude-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardBuffMenu1Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardBuffMenu2" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Buff", "ANCHOR_RIGHT", 11);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffCast(11, arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\DivineSpirit-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\DivineSpirit-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardBuffMenu2Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardBuffMenu3" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Buff", "ANCHOR_RIGHT", 13);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffCast(13, arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\ShadowProtection-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\ShadowProtection-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardBuffMenu3Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardBuffMenu4" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Buff", "ANCHOR_RIGHT", 15);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffCast(15, arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\InnerFire-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\InnerFire-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardBuffMenu4Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardBuffMenu5" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Buff", "ANCHOR_RIGHT", 16);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffCast(16, arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Shadowform-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Shadowform-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardBuffMenu5Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardBuffMenu6" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Buff", "ANCHOR_RIGHT", 23);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_BuffCast(23, arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\EnlightenCustom-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\EnlightenCustom-01" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardBuffMenu6Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+
+	<Button name="HolywardUtilityMenuButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="HolywardButton" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="44"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "UtilityMenu", "ANCHOR_TOP");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityMenu(arg1);
+			</OnClick>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Holy\SpellMenuButton-01">
+			<Size>
+				<AbsDimension x="31" y="31"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Holy\SpellMenuButton-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="31" y="31"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="HolywardUtilityMenu1" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Utility", "ANCHOR_TOP", 2);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityCast(2);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\FearWard-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\FearWard-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardUtilityMenu1Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardUtilityMenu2" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Utility", "ANCHOR_TOP", 18);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityCast(18);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\MindSoothe-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\MindSoothe-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardUtilityMenu2Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardUtilityMenu3" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Utility", "ANCHOR_TOP", 19);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityCast(19);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Levitate-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Levitate-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardUtilityMenu3Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardUtilityMenu4" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Utility", "ANCHOR_TOP", 20);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityCast(20);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Lightwell-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Lightwell-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardUtilityMenu4Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardUtilityMenu5" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Utility", "ANCHOR_TOP", 21);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityCast(21);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Resurrection-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Resurrection-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardUtilityMenu5Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+	<Button name="HolywardUtilityMenu6" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Utility", "ANCHOR_TOP", 32);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UtilityCast(32);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\MindVision-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\MindVision-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<Cooldown name="HolywardUtilityMenu6Cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+	</Button>
+
+	<Button name="HolywardMountButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="HolywardButton" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="-44" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Mount", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_UseMount(arg1);
+			</OnClick>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\MountCustom-01"/>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\MountCustom-01" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="HolywardConsumablesButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="HolywardButton" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-44"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Consumables", "ANCHOR_BOTTOM");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesButtonClick(arg1);
+			</OnClick>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\PotionCustom-01"/>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\PotionCustom-01" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="HolywardConsumablesMenu1" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Water");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Water12-01">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Water12-03" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardConsumablesMenu2" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Food");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(2);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_Food_11">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_Food_11" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Buttons\UI-Quickslot2" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="HolywardConsumablesMenu3" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Healing Potion");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(3);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Potion_54">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Potion_54" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Buttons\UI-Quickslot2" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="HolywardConsumablesMenu4" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Mana Potion");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(4);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Potion_76">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Potion_76" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Buttons\UI-Quickslot2" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="HolywardConsumablesMenu5" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Elixir");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(5);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Potion_92">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Potion_92" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Buttons\UI-Quickslot2" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="HolywardConsumablesMenu6" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Flask");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(6);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Potion_62">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Potion_62" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Buttons\UI-Quickslot2" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="HolywardConsumablesMenu7" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Bandage");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ConsumablesCast(7);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_Bandage_08">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_Bandage_08" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Buttons\UI-Quickslot2" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="HolywardProfessionsButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="HolywardButton" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="31" y="31"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp");
+			</OnLoad>
+			<OnEnter>
+				Holyward_BuildTooltip(this, "Professions", "ANCHOR_BOTTOM");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsButtonClick(arg1);
+			</OnClick>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Holyward\UI\Professions-01">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\Holyward\UI\Professions-01" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="HolywardProfessionsMenu1" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu2" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(2);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu3" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(3);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu4" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(4);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu5" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(5);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu6" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(6);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu7" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(7);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="HolywardProfessionsMenu8" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="3000" y="3000"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Holyward_ProfessionsTooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Holyward_ProfessionsCast(8);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Icons\INV_Misc_QuestionMark" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="30" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Frame name="HolywardBuffTrackerFrame" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="500" y="46"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="HolywardBuffTrackerFrameBackground" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.3"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HolywardBuffTracker1" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker1Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker1Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker1Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker2" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker2Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker2Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker2Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker3" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker2" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker3Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker3Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker3Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker4" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker3" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker4Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker4Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker4Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker5" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker4" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker5Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker5Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker5Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker6" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker5" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker6Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker6Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker6Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker7" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker6" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker7Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker7Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker7Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker8" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker7" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker8Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker8Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker8Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker9" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker8" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker9Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker9Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker9Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker10" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker9" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker10Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker10Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker10Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker11" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker10" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker11Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker11Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker11Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker12" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker11" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker12Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker12Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker12Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker13" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker12" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker13Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker13Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker13Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HolywardAbilityTrackerFrame" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="518" y="54"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="140"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				Holyward_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Holyward_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Holyward_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="HolywardAbilityTrackerFrameBackground" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.3"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HolywardAbilityTracker1" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="3" y="-3"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker1Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker1Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker1Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker2" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker1" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker2Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker2Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker2Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker3" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker2" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker3Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker3Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker3Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker4" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker3" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker4Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker4Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker4Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker5" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker4" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker5Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker5Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker5Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker6" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker5" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker6Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker6Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker6Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker7" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker6" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker7Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker7Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker7Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker8" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker7" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker8Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker8Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker8Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker9" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker8" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker9Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker9Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker9Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker10" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker9" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker10Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker10Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker10Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker11" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker10" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker11Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker11Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker11Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker12" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker11" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker12Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker12Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker12Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker13" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker12" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker13Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker13Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker13Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker14" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker13" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker14Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker14Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker14Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker15" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker14" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker15Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker15Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker15Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker16" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker15" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker16Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker16Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker16Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="HolywardAbilityTracker17" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardAbilityTracker16" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="HolywardAbilityTracker17Glow" file="Interface\Buttons\WHITE8X8" hidden="true">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardAbilityTracker17Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardAbilityTracker17Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<GameTooltip name="HolywardTooltip" frameStrata="LOW" toplevel="true" movable="true" parent="UIParent" inherits="GameTooltipTemplate" />
+</Ui>
