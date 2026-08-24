@@ -227,9 +227,12 @@ function Holyward_DisplayTimer(display, index, SpellGroup, SpellTimer, Graphical
 		display = display .. "<close>\n"
 	end
 
-	if HolywardConfig.Graphical then
-		HolywardAfficheTimer(GraphicalTimer, TimerTable)
-	end
+	-- HolywardAfficheTimer is NOT called here anymore (2026-08-24 fix): this function runs once PER
+	-- active timer inside the sweep loop, and calling the full re-render on every single one of those
+	-- calls meant N active timers re-rendered the whole (still-growing) GraphicalTimer list N times a
+	-- second -- quadratic work, and each pass does real SetPoint/SetTexture/CooldownFrame_SetTimer
+	-- calls per row, not cheap Lua ops. The caller (Holyward_OnUpdate's stage 4) now renders once,
+	-- after this loop has finished building the complete list for the tick.
 
 	return display, SpellGroup, GraphicalTimer, TimerTable
 end

@@ -39,7 +39,7 @@ function HolywardAfficheTimer(tableau, pointeur)
 			if TimerTarget == 11 then
 				TimerTarget = 1
 			end
-			local frameItem = getglobal("HolywardTarget" .. TimerTarget .. "Text")
+			local frameItem = Holyward_CachedGlobal("HolywardTarget" .. TimerTarget .. "Text")
 			frameItem:ClearAllPoints()
 			frameItem:SetPoint(
 				HolywardConfig.SpellTimerJust,
@@ -54,10 +54,10 @@ function HolywardAfficheTimer(tableau, pointeur)
 				frameItem:Show()
 			end
 		else
-			local frameIcon = getglobal("HolywardTimer" .. tableau.Gtimer[index] .. "Icon")
+			local frameIcon = Holyward_CachedGlobal("HolywardTimer" .. tableau.Gtimer[index] .. "Icon")
 			local frameCooldown =
 				Holyward_GetOrCreateCooldown("HolywardTimer" .. tableau.Gtimer[index], HolywardBarTimers, 24)
-			local frameText = getglobal("HolywardTimer" .. tableau.Gtimer[index] .. "Text")
+			local frameText = Holyward_CachedGlobal("HolywardTimer" .. tableau.Gtimer[index] .. "Text")
 
 			if frameIcon and frameCooldown and frameText then
 				frameIcon:ClearAllPoints()
@@ -110,7 +110,7 @@ function HolywardAfficheTimer(tableau, pointeur)
 
 	if TimerTarget < 10 then
 		for i = TimerTarget + 1, 10, 1 do
-			local frameItem = getglobal("HolywardTarget" .. i .. "Text")
+			local frameItem = Holyward_CachedGlobal("HolywardTarget" .. i .. "Text")
 			if frameItem:IsShown() then
 				frameItem:Hide()
 			end

@@ -33,7 +33,7 @@ Default_HolywardConfig = {
 	-- that order. Elixirs and Blessings are single grouped slots now: vanilla lets any number of
 	-- elixirs stack (no battle/guardian split -- that's a TBC rule), so one icon shows the count
 	-- and right-click expands the individual buffs.
-	BuffTrackerEnabled = { true, true, true, true, true, true, true, true, true, true, true, true, true },
+	BuffTrackerEnabled = { true, true, true, true, true, true, true, true, true, true, true, true, true, true },
 	-- One flag per HOLYWARD_ABILITY_TRACKER slot (Fade, Fear Ward, Power Infusion, Inner Focus,
 	-- Pain Spike, Psychic Scream, Chastise, Ascendance, Enlighten proc, Shackle Undead, Weakened
 	-- Soul, Devouring Plague, Shadow Word: Pain, Purifying Flames, Searing Light, Mana Potion, Inner
@@ -52,12 +52,22 @@ Default_HolywardConfig = {
 	-- below -- the autoSelfCast CVar is toggled off automatically for the duration of each cast, so
 	-- the user does not need to touch WoW's own Interface Options for this to work.
 	MouseoverCast = false,
+	-- Automatically invites whoever whispers you "inv", "invite", or "123" (exact match, see
+	-- HOLYWARD_AUTOINVITE_KEYWORDS) -- no more manually inviting every LFG whisper by hand.
+	AutoInvite = false,
+	-- One flag per HOLYWARD_CONSUMABLE_CATEGORY slot (Water, Food, Healing Potion, Mana Potion,
+	-- Elixir, Flask, Bandage), in that order -- which categories show on the Consumables menu.
+	ConsumablesEnabled = { true, true, true, true, true, true, true },
+	-- Direction the expanded "everything in this category" popup opens: UP, DOWN, LEFT, or RIGHT.
+	ConsumablesExpandDirection = "UP",
+	-- Same idea for the Buff Tracker's own Elixir/Blessing group popups (Options -> Buffs).
+	BuffTrackerExpandDirection = "DOWN",
 	-- The translucent dark panel behind each tracker window; off = icons float directly on the world.
 	BuffTrackerBackground = true,
 	AbilityTrackerBackground = true,
 	-- How many icons per row before the tracker wraps to a new row. No longer exposed as a slider --
 	-- it follows the corner resize grip: drag the tracker wider/narrower and this updates itself.
-	BuffTrackerPerRow = 13,
+	BuffTrackerPerRow = 14,
 	AbilityTrackerPerRow = 17,
 	-- Per-tracker geometry, set from the options window: icon edge length in pixels, plus the
 	-- horizontal gap between columns and the vertical gap between rows (the countdown text lives
@@ -129,12 +139,33 @@ do
 					HolywardTooltip:SetAction(slot)
 					spellName = HolywardTooltipTextLeft1 and HolywardTooltipTextLeft1:GetText()
 					-- CastSpellByName with just the bare name always casts the HIGHEST known rank --
-					-- read the tooltip's rank line too (e.g. "Rank 1") and fold it into
+					-- read the tooltip's rank text too (e.g. "Rank 1") and fold it into
 					-- "Name(Rank N)", the format CastSpellByName needs to hit that exact rank instead.
 					-- Without this, a lower-rank button placed specifically to save mana silently cast
-					-- max rank via mouseover instead (confirmed by the user 2026-08-22).
-					local rankLine = HolywardTooltipTextLeft2 and HolywardTooltipTextLeft2:GetText()
-					if spellName and rankLine and string.find(rankLine, HOLYWARD_TRANSLATION.Rank) then
+					-- max rank via mouseover instead (confirmed by the user 2026-08-22, and again
+					-- 2026-08-24). Debug output confirmed a 4-line tooltip with nothing matching "Rank"
+					-- in any TextLeft line -- this client pairs the rank with the name on the SAME row,
+					-- right-aligned (TextRight1), not as its own left-aligned line, so scan both sides
+					-- of every line instead of assuming it's a separate TextLeft entry.
+					local rankLine = nil
+					local numLines = HolywardTooltip:NumLines()
+					for i = 1, numLines, 1 do
+						local rightLine = getglobal("HolywardTooltipTextRight" .. i)
+						local rightText = rightLine and rightLine:GetText()
+						if rightText and string.find(rightText, HOLYWARD_TRANSLATION.Rank) then
+							rankLine = rightText
+							break
+						end
+						if i > 1 then
+							local leftLine = getglobal("HolywardTooltipTextLeft" .. i)
+							local leftText = leftLine and leftLine:GetText()
+							if leftText and string.find(leftText, HOLYWARD_TRANSLATION.Rank) then
+								rankLine = leftText
+								break
+							end
+						end
+					end
+					if spellName and rankLine then
 						spellName = spellName .. "(" .. rankLine .. ")"
 					end
 					HolywardTooltip:Hide()
@@ -198,6 +229,16 @@ local SpellCast = {
 	TargetUnit = nil,
 	TargetGUID = nil,
 }
+
+-- Mana Potion's Ability Tracker slot used to do a full 5-bag scan every second regardless of
+-- whether anything actually changed. Bags only really change on BAG_UPDATE, so cache the found
+-- slot and only re-scan when that event marks the cache dirty (see Holyward_OnEvent).
+local ManaPotionCache = { bag = nil, slot = nil, dirty = true }
+
+-- Auto-invite (Options -> General): whispers whose whole (trimmed, lowercased) text matches one
+-- of these trigger an automatic InviteByName. Exact-match only, not substring, so an unrelated
+-- sentence containing one of these words doesn't accidentally invite someone.
+local HOLYWARD_AUTOINVITE_KEYWORDS = { ["inv"] = true, ["invite"] = true, ["123"] = true }
 
 local MenuState = {
 	BuffMenuShow = false,
@@ -367,6 +408,24 @@ function Holyward_GetOrCreateCooldown(key, parent, size)
 	cooldown:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT")
 	HolywardCooldownFrames[key] = cooldown
 	return cooldown
+end
+
+-- Same memoize-by-name idea as HolywardCooldownFrames above, but for plain getglobal() lookups on
+-- XML-defined frames that never change identity after creation (tracker slot frames, their icon/
+-- text children). The Buff and Ability Tracker's layout+update passes run once a second and were
+-- each re-resolving every slot's frame/icon/text by name every single time (~150 getglobal hash
+-- lookups + string concats a second combined across both trackers) -- pure waste once the frame
+-- exists, same category of fix already applied to the satellite buttons' Holyward_SatelliteFrame.
+-- Global (not local) so every section of this file that reads tracker slot frames can share the
+-- one cache instead of each keeping its own.
+HolywardGlobalFrameCache = {}
+function Holyward_CachedGlobal(name)
+	local frame = HolywardGlobalFrameCache[name]
+	if frame == nil then
+		frame = getglobal(name)
+		HolywardGlobalFrameCache[name] = frame
+	end
+	return frame
 end
 
 ------------------------------------------------------------------------------------------------------
@@ -634,6 +693,25 @@ end
 -- "about to fall off". The vertex-color fade carries that signal directly instead.
 ------------------------------------------------------------------------------------------------------
 
+-- Elixir/battle-potion aura names that don't contain the substring "Elixir" at all, so the plain
+-- substring match below would silently miss them entirely. Confirmed real via three reference
+-- addons (2026-08-24, user-provided): Akkio_Consume_Helper (TurtleWoW-specific consumables, e.g.
+-- the Concoction line and Danonzo's-adjacent "Special Potions") and DopingControl (vanilla raid-
+-- consumable audit tool, which also documents cases where the live AURA name measured in-game
+-- differs from the ITEM name -- e.g. Elixir of Fortitude's own buff is literally titled "Health II").
+-- Kept as its own lookup so it's easy to extend later without touching the match logic itself.
+local HOLYWARD_ELIXIR_EXTRA_NAMES = {
+	["Juju Might"] = true, ["Juju Power"] = true, ["Juju Flurry"] = true,
+	["Winterfall Firewater"] = true, ["Spirit of Zanza"] = true, ["R.O.I.D.S."] = true,
+	["Ground Scorpok Assay"] = true, ["Gift of Arthas"] = true,
+	["Cerebral Cortex Compound"] = true, ["Dreamtonic"] = true,
+	["Mageblood Potion"] = true, ["Mageblood"] = true,
+	["Concoction of the Emerald Mongoose"] = true, ["Concoction of the Dreamwater"] = true,
+	["Concoction of the Arcane Giant"] = true,
+	-- Aura name differs from the item name on this client (see comment above).
+	["Health II"] = true, ["Greater Agility"] = true, ["Greater Frost Power"] = true,
+}
+
 -- Match = substring searched in the aura name. Occurrence lets two slots share the same substring
 -- (the two Elixir slots, since vanilla allows one Battle + one Guardian elixir at once). Weapon=true
 -- reads GetWeaponEnchantInfo instead of the aura list, since weapon oils/stones aren't regular auras.
@@ -644,8 +722,9 @@ local HOLYWARD_BUFF_TRACKER = {
 	-- TBC+), and a raid can carry several paladin blessings. One icon per group showing the active
 	-- count; right-click expands the individual buff icons in a column below the slot. Per the user
 	-- (2026-08-23), the MAIN slot's tooltip stays generic ("Elixir"/"Blessings") -- only the expanded
-	-- popup icons underneath show the real tooltip of that specific buff.
-	{ Group = "Elixir", Icon = "Interface\\Icons\\INV_Potion_92", Label = "Elixir" },
+	-- popup icons underneath show the real tooltip of that specific buff. ExtraNames covers elixir-
+	-- category buffs whose aura name has no "Elixir" substring to match on (see table above).
+	{ Group = "Elixir", Icon = "Interface\\Icons\\INV_Potion_92", Label = "Elixir", ExtraNames = HOLYWARD_ELIXIR_EXTRA_NAMES },
 	{ Weapon = true, Icon = "Interface\\Icons\\Spell_Fire_EnchantWeapon", Label = "Weapon Buff" },
 	-- Kreeg's Stout Beatdown (Dire Maul, https://www.wowhead.com/classic/item=18284) -- +15 Spirit,
 	-- gambles a stun debuff too; the buff aura is named the same as the item.
@@ -661,6 +740,10 @@ local HOLYWARD_BUFF_TRACKER = {
 	{ Group = "Blessing of", Icon = "Interface\\Icons\\Spell_Magic_GreaterBlessingofKings", Label = "Blessings" },
 	{ Match = "Thorns", Icon = "Interface\\Icons\\Spell_Nature_Thorns", Label = "Thorns" },
 	{ Match = "Inner Fire", Icon = "Interface\\Icons\\Spell_Holy_InnerFire", Label = "Inner Fire" },
+	-- Slot 14, appended (2026-08-24) per the user -- not inserted among the others, so no existing
+	-- slot's index (and no existing saved BuffTrackerEnabled/HolywardBuffTrackerN XML frame) shifts.
+	-- Matches both ranks ("Shadow Protection" and "Prayer of Shadow Protection") same as Fortitude.
+	{ Match = "Shadow Protection", Icon = "Interface\\Icons\\Spell_Shadow_AntiShadow", Label = "Shadow Protection" },
 }
 
 -- Buff Tracker slot -> HOLYWARD_SPELL_TABLE index, for the 3 slots that are actually spells the
@@ -718,7 +801,14 @@ end
 -- yields names only (icon nil -> the group popup shows a placeholder). `index` is the raw aura
 -- index at collection time, kept so the popup's OnEnter can show the real tooltip via
 -- GameTooltip:SetUnitBuff("player", index) instead of just the generic group label.
-local function Holyward_CollectBuffMatches(matchText)
+local function Holyward_BuffNameMatches(name, matchText, extraNames)
+	if string.find(name, matchText, 1, true) then
+		return true
+	end
+	return extraNames and extraNames[name] or false
+end
+
+local function Holyward_CollectBuffMatches(matchText, extraNames)
 	local matches = {}
 	if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
 		local index = 1
@@ -727,7 +817,7 @@ local function Holyward_CollectBuffMatches(matchText)
 			if not data then
 				break
 			end
-			if data.name and string.find(data.name, matchText, 1, true) then
+			if data.name and Holyward_BuffNameMatches(data.name, matchText, extraNames) then
 				table.insert(matches, { name = data.name, icon = data.icon, expiration = data.expirationTime, index = index })
 			end
 			index = index + 1
@@ -739,7 +829,7 @@ local function Holyward_CollectBuffMatches(matchText)
 		Holyward_MoneyToggle()
 		HolywardTooltip:SetUnitBuff("player", index)
 		local buffName = tostring(HolywardTooltipTextLeft1:GetText())
-		if string.find(buffName, matchText, 1, true) then
+		if Holyward_BuffNameMatches(buffName, matchText, extraNames) then
 			table.insert(matches, { name = buffName, index = index })
 		end
 		index = index + 1
@@ -754,16 +844,23 @@ end
 ------------------------------------------------------------------------------------------------------
 
 local BuffGroupExpanded = {}
+local BuffGroupExpireAt = {}
 local BuffGroupPopups = {}
 local HOLYWARD_BUFF_GROUP_POPUP_MAX = 8
+-- Auto-collapse an expanded group popup after this many seconds with no further toggle, so it
+-- doesn't sit open forever (per the user, 2026-08-24). Checked once a second from
+-- Holyward_UpdateBuffTracker below, not every frame -- plenty precise for a multi-second timeout.
+local HOLYWARD_BUFF_GROUP_EXPAND_TIMEOUT = 6
 
--- Right-click on a Group slot toggles its expand popup; left-click on one of the 3 castable slots
--- casts it. One handler, OnMouseDown -- OnMouseUp turned out not to fire reliably on a plain Frame
--- on this client (confirmed 2026-08-23: the Group slots' expand toggle, already on OnMouseDown, was
--- the only one of the two that actually worked), so both live on the same proven event now.
+-- Either click on a Group slot toggles its expand popup (both left and right, per the user,
+-- 2026-08-24); left-click on one of the 3 castable slots casts it. One handler, OnMouseDown --
+-- OnMouseUp turned out not to fire reliably on a plain Frame on this client (confirmed 2026-08-23),
+-- so both live on the same proven event.
 local function Holyward_BuffTrackerSlot_OnMouseDown()
-	if arg1 == "RightButton" and this.holywardGroupSlot then
-		BuffGroupExpanded[this.holywardGroupSlot] = not BuffGroupExpanded[this.holywardGroupSlot]
+	if this.holywardGroupSlot then
+		local slot = this.holywardGroupSlot
+		BuffGroupExpanded[slot] = not BuffGroupExpanded[slot]
+		BuffGroupExpireAt[slot] = BuffGroupExpanded[slot] and (GetTime() + HOLYWARD_BUFF_GROUP_EXPAND_TIMEOUT) or nil
 		return
 	end
 	local castIndex = this.holywardBuffSlot and HOLYWARD_BUFF_TRACKER_CAST[this.holywardBuffSlot]
@@ -818,14 +915,33 @@ function Holyward_SetupBuffGroupSlots()
 end
 
 -- Real per-buff tooltip for an expanded group popup icon (Elixir/Blessing list) -- the aura index
--- at collection time is stashed on the frame by Holyward_UpdateBuffGroupPopup below.
-function Holyward_BuffGroupPopup_OnEnter(frame)
-	if frame and frame.holywardAuraIndex then
-		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
-		GameTooltip:SetUnitBuff("player", frame.holywardAuraIndex)
-		GameTooltip:Show()
+-- at collection time is stashed on the frame by Holyward_UpdateBuffGroupPopup below. Always shows
+-- something on hover (per the user, 2026-08-24): falls back to the group's generic label on the
+-- rare frame where the aura index hasn't been set yet instead of showing nothing.
+-- THE ACTUAL BUG (2026-08-24): this took `frame` as a function PARAMETER, but a plain
+-- `popup:SetScript("OnEnter", Holyward_BuffGroupPopup_OnEnter)` never passes the frame as an
+-- argument on this client -- it sets the implicit `this` global instead (documented project-wide
+-- gotcha: XML-script-handler callbacks read `this`/`argN`, not `function(self, ...)` params). So
+-- `frame` was nil on every single call and this returned immediately, every time -- the tooltip
+-- never had a chance to show. Rewritten to read `this` like every other OnEnter in this file.
+function Holyward_BuffGroupPopup_OnEnter()
+	GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+	if this.holywardAuraIndex then
+		GameTooltip:SetUnitBuff("player", this.holywardAuraIndex)
+	else
+		local category = this.holywardGroupSlot and HOLYWARD_BUFF_TRACKER[this.holywardGroupSlot]
+		GameTooltip:AddLine(category and (category.Label or category.Group) or "", 1.0, 1.0, 1.0)
 	end
+	GameTooltip:Show()
 end
+
+local HOLYWARD_BUFF_GROUP_POPUP_SIZE = 24
+-- Gap between the trigger slot's own edge and the first popup icon (per the user, 2026-08-24:
+-- reduce this one) and the pitch between consecutive popup icons (must be >= the icon size above
+-- or consecutive icons overlap -- confirmed the actual bug behind the "too cramped" screenshot:
+-- the old fixed -10/-22 formula had a 22px pitch against a 24px icon, a 2px overlap every step).
+local HOLYWARD_BUFF_GROUP_POPUP_GAP = 2
+local HOLYWARD_BUFF_GROUP_POPUP_SPACING = HOLYWARD_BUFF_GROUP_POPUP_SIZE + 3
 
 local function Holyward_GetBuffGroupPopup(slot, j)
 	if not BuffGroupPopups[slot] then
@@ -836,14 +952,24 @@ local function Holyward_GetBuffGroupPopup(slot, j)
 		if not slotFrame then
 			return nil
 		end
-		local popup = CreateFrame("Frame", nil, slotFrame)
-		popup:SetWidth(24)
-		popup:SetHeight(24)
-		-- First popup sits below the slot's countdown text line; the rest stack downward.
-		popup:SetPoint("TOP", slotFrame, "BOTTOM", 0, -16 - (j - 1) * 26)
+		-- "Button", not plain "Frame" (2026-08-24 fix): the Consumables Menu's own popups, which
+		-- never had this tooltip problem, are CreateFrame("Button", ...) -- these were the one place
+		-- still using a plain Frame for a hover-only widget, and this client has already shown (see
+		-- the OnMouseUp gotcha elsewhere in this file) that a bare Frame's mouse events aren't
+		-- reliable here even with EnableMouse(true); Button is the widget type actually proven to
+		-- work for both click and hover across the rest of this addon.
+		local popup = CreateFrame("Button", nil, slotFrame)
+		popup:SetWidth(HOLYWARD_BUFF_GROUP_POPUP_SIZE)
+		popup:SetHeight(HOLYWARD_BUFF_GROUP_POPUP_SIZE)
+		-- TOOLTIP strata: without this, the tracker window's own background/drag region -- a sibling
+		-- frame covering the same screen area the popups extend into -- could win the mouse hit-test
+		-- over a popup sitting visually on top of it. Same fix already applied to the Consumables
+		-- Menu's own popups (see Holyward_GetConsumablesGroupPopup).
+		popup:SetFrameStrata("TOOLTIP")
 		local tex = popup:CreateTexture(nil, "ARTWORK")
 		tex:SetAllPoints(popup)
 		popup.holywardIcon = tex
+		popup.holywardGroupSlot = slot
 		popup:EnableMouse(true)
 		popup:SetScript("OnEnter", Holyward_BuffGroupPopup_OnEnter)
 		popup:SetScript("OnLeave", function()
@@ -855,6 +981,13 @@ local function Holyward_GetBuffGroupPopup(slot, j)
 	return BuffGroupPopups[slot][j]
 end
 
+-- Position is recomputed every update (not just at creation) so a live change to
+-- HolywardConfig.BuffTrackerExpandDirection (Options -> Buffs) reflows an already-built popup pool
+-- immediately instead of only taking effect on the next relog.
+-- LastShown tracks the previous call's count per slot so a fully-collapsed group (the overwhelming
+-- majority of ticks, since these lists are rarely left open) can skip the pool loop entirely instead
+-- of re-hiding up to 8 already-hidden popups every second for the lifetime of the session.
+local BuffGroupLastShown = {}
 local function Holyward_UpdateBuffGroupPopup(slot, matches)
 	local shown = 0
 	if BuffGroupExpanded[slot] and matches then
@@ -863,12 +996,29 @@ local function Holyward_UpdateBuffGroupPopup(slot, matches)
 			shown = HOLYWARD_BUFF_GROUP_POPUP_MAX
 		end
 	end
+	if shown == 0 and (BuffGroupLastShown[slot] or 0) == 0 then
+		return
+	end
+	BuffGroupLastShown[slot] = shown
+	local direction = HolywardConfig.BuffTrackerExpandDirection or "DOWN"
+	local slotFrame = Holyward_CachedGlobal("HolywardBuffTracker" .. slot)
 	for j = 1, HOLYWARD_BUFF_GROUP_POPUP_MAX, 1 do
 		local popup = Holyward_GetBuffGroupPopup(slot, j)
 		if popup then
 			if j <= shown then
 				popup.holywardIcon:SetTexture(matches[j].icon or "Interface\\Icons\\INV_Misc_QuestionMark")
 				popup.holywardAuraIndex = matches[j].index
+				popup:ClearAllPoints()
+				local offset = HOLYWARD_BUFF_GROUP_POPUP_GAP + (j - 1) * HOLYWARD_BUFF_GROUP_POPUP_SPACING
+				if direction == "UP" then
+					popup:SetPoint("BOTTOM", slotFrame, "TOP", 0, offset)
+				elseif direction == "LEFT" then
+					popup:SetPoint("RIGHT", slotFrame, "LEFT", -offset, 0)
+				elseif direction == "RIGHT" then
+					popup:SetPoint("LEFT", slotFrame, "RIGHT", offset, 0)
+				else
+					popup:SetPoint("TOP", slotFrame, "BOTTOM", 0, -offset)
+				end
 				popup:Show()
 			else
 				popup.holywardAuraIndex = nil
@@ -886,14 +1036,19 @@ function Holyward_UpdateBuffTracker()
 	Holyward_LayoutBuffTracker()
 	for slot = 1, table.getn(HOLYWARD_BUFF_TRACKER), 1 do
 		local category = HOLYWARD_BUFF_TRACKER[slot]
-		local icon = getglobal("HolywardBuffTracker" .. slot .. "Icon")
-		local text = getglobal("HolywardBuffTracker" .. slot .. "Text")
+		local icon = Holyward_CachedGlobal("HolywardBuffTracker" .. slot .. "Icon")
+		local text = Holyward_CachedGlobal("HolywardBuffTracker" .. slot .. "Text")
 		if category.Group and icon and text then
-			-- Grouped slot: count of active matches on the icon, right-click to expand the list.
-			-- A disabled/hidden slot also collapses its popup.
+			-- Grouped slot: count of active matches on the icon, left or right click to expand the
+			-- list. A disabled/hidden slot also collapses its popup, and an expanded one auto-
+			-- collapses on its own once HOLYWARD_BUFF_GROUP_EXPAND_TIMEOUT elapses.
+			if BuffGroupExpanded[slot] and BuffGroupExpireAt[slot] and GetTime() >= BuffGroupExpireAt[slot] then
+				BuffGroupExpanded[slot] = nil
+				BuffGroupExpireAt[slot] = nil
+			end
 			if HolywardConfig.BuffTrackerEnabled[slot] then
 				icon:SetTexture(category.Icon)
-				local matches = Holyward_CollectBuffMatches(category.Group)
+				local matches = Holyward_CollectBuffMatches(category.Group, category.ExtraNames)
 				local count = table.getn(matches)
 				if count > 0 then
 					icon:SetVertexColor(1, 1, 1)
@@ -902,10 +1057,12 @@ function Holyward_UpdateBuffTracker()
 					icon:SetVertexColor(HOLYWARD_BUFF_TRACKER_ABSENT_SHADE, HOLYWARD_BUFF_TRACKER_ABSENT_SHADE, HOLYWARD_BUFF_TRACKER_ABSENT_SHADE)
 					text:SetText("")
 					BuffGroupExpanded[slot] = nil
+					BuffGroupExpireAt[slot] = nil
 				end
 				Holyward_UpdateBuffGroupPopup(slot, matches)
 			else
 				BuffGroupExpanded[slot] = nil
+				BuffGroupExpireAt[slot] = nil
 				Holyward_UpdateBuffGroupPopup(slot, nil)
 			end
 		elseif icon and text and HolywardConfig.BuffTrackerEnabled[slot] then
@@ -1006,9 +1163,9 @@ function Holyward_UpdateAbilityTracker()
 	for slot = 1, table.getn(HOLYWARD_ABILITY_TRACKER), 1 do
 		local spellIndex = HOLYWARD_ABILITY_TRACKER[slot]
 		local entry = HOLYWARD_SPELL_TABLE[spellIndex]
-		local slotFrame = getglobal("HolywardAbilityTracker" .. slot)
-		local icon = getglobal("HolywardAbilityTracker" .. slot .. "Icon")
-		local text = getglobal("HolywardAbilityTracker" .. slot .. "Text")
+		local slotFrame = Holyward_CachedGlobal("HolywardAbilityTracker" .. slot)
+		local icon = Holyward_CachedGlobal("HolywardAbilityTracker" .. slot .. "Icon")
+		local text = Holyward_CachedGlobal("HolywardAbilityTracker" .. slot .. "Text")
 		local glow = slotFrame and slotFrame.holywardGlow
 
 		if icon and text and glow and HolywardConfig.AbilityTrackerEnabled[slot] then
@@ -1025,9 +1182,12 @@ function Holyward_UpdateAbilityTracker()
 				local start, duration = 0, 0
 				local usable = true
 				if entry.Item then
-					local bag, itemSlot = Holyward_ScanBagsForNames(entry.Item)
-					if bag then
-						start, duration = GetContainerItemCooldown(bag, itemSlot)
+					if ManaPotionCache.dirty then
+						ManaPotionCache.bag, ManaPotionCache.slot = Holyward_ScanBagsForNames(entry.Item)
+						ManaPotionCache.dirty = false
+					end
+					if ManaPotionCache.bag then
+						start, duration = GetContainerItemCooldown(ManaPotionCache.bag, ManaPotionCache.slot)
 					else
 						usable = false
 					end
@@ -1341,7 +1501,7 @@ local function Holyward_LayoutTrackerGrid(slotPrefix, containerName, count, perR
 	end
 	local rows = ceil(visible / perRow)
 
-	local container = getglobal(containerName)
+	local container = Holyward_CachedGlobal(containerName)
 
 	-- Snapped grid width: side pads (3+3) + perRow icons with gaps between (not after the last).
 	local snapWidth = perRow * colPitch - spacingX + 6
@@ -1359,7 +1519,7 @@ local function Holyward_LayoutTrackerGrid(slotPrefix, containerName, count, perR
 	local placed = 0
 	for k = 1, count, 1 do
 		local i = orderArray and orderArray[k] or k
-		local slot = i and getglobal(slotPrefix .. i)
+		local slot = i and Holyward_CachedGlobal(slotPrefix .. i)
 		if slot then
 			if not enabledArray or enabledArray[i] then
 				placed = placed + 1
@@ -1380,7 +1540,7 @@ local function Holyward_LayoutTrackerGrid(slotPrefix, containerName, count, perR
 				slot:SetWidth(iconSize)
 				slot:SetHeight(iconSize)
 				if innerIconRatio then
-					local inner = getglobal(slotPrefix .. i .. "Icon")
+					local inner = Holyward_CachedGlobal(slotPrefix .. i .. "Icon")
 					if inner then
 						inner:SetWidth(floor(iconSize * innerIconRatio))
 						inner:SetHeight(floor(iconSize * innerIconRatio))
@@ -1393,9 +1553,11 @@ local function Holyward_LayoutTrackerGrid(slotPrefix, containerName, count, perR
 					slot.holywardGlow:SetHeight(floor(iconSize * 1.7))
 				end
 				slot:ClearAllPoints()
+				-- Anchor to the already-resolved container frame object, not its name string --
+				-- passing a name here makes the engine re-resolve it internally on every call.
 				slot:SetPoint(
 					"TOPLEFT",
-					containerName,
+					container or containerName,
 					"TOPLEFT",
 					x,
 					-3 - row * rowPitch
@@ -1453,7 +1615,7 @@ function Holyward_LayoutBuffTracker(liveSizing)
 	Holyward_LayoutTrackerGrid(
 		"HolywardBuffTracker",
 		"HolywardBuffTrackerFrame",
-		13,
+		14,
 		HolywardConfig.BuffTrackerPerRow,
 		HolywardConfig.BuffTrackerEnabled,
 		nil,
@@ -1588,7 +1750,7 @@ local function Holyward_AbilityDrag_OnUpdate()
 	for k = 1, 15, 1 do
 		local base = order[k]
 		if base and base ~= AbilityDragBase and HolywardConfig.AbilityTrackerEnabled[base] then
-			local frame = getglobal("HolywardAbilityTracker" .. base)
+			local frame = Holyward_CachedGlobal("HolywardAbilityTracker" .. base)
 			if frame and Holyward_CursorInFrame(frame, 0) then
 				local from = nil
 				for j = 1, 15, 1 do
@@ -1738,7 +1900,7 @@ end
 
 local function Holyward_BuffTracker_OnUpdate()
 	if HolywardBuffTrackerFrame.holywardSizing then
-		Holyward_TrackerSizing_OnUpdate(HolywardBuffTrackerFrame, "BuffTrackerPerRow", 13, Holyward_LayoutBuffTracker, "Buff")
+		Holyward_TrackerSizing_OnUpdate(HolywardBuffTrackerFrame, "BuffTrackerPerRow", 14, Holyward_LayoutBuffTracker, "Buff")
 	end
 end
 
@@ -1775,6 +1937,10 @@ function Holyward_OnLoad()
 	this:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	this:RegisterEvent("LEARNED_SPELL_IN_TAB")
 	this:RegisterEvent("PLAYER_REGEN_ENABLED")
+	-- Invalidates the Mana Potion bag-scan cache (see ManaPotionCache below) -- bags only actually
+	-- change on this event, so there's no reason to re-scan every second regardless.
+	this:RegisterEvent("BAG_UPDATE")
+	this:RegisterEvent("CHAT_MSG_WHISPER")
 
 	HolywardButton:RegisterForDrag("LeftButton")
 	HolywardButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -1785,16 +1951,27 @@ function Holyward_OnLoad()
 end
 
 -- Polled every frame by Holyward_Variable_Frame until saved variables are ready.
+-- Called from Holyward_Variable_Frame's XML OnUpdate (Holyward.xml) every single frame until
+-- SavedVariables are ready. Once there's a final answer -- either loaded, or confirmed not a Priest
+-- (a character's class never changes mid-session, so that answer can't go stale) -- unregister the
+-- OnUpdate via `this` (the frame the XML handler is bound to) so this stops polling 60 times a
+-- second, forever, for nothing (2026-08-24 fix).
 function Holyward_LoadVariables()
-	if Loaded or UnitClass("player") ~= HOLYWARD_UNIT_PRIEST then
+	if Loaded then
+		return
+	end
+	if UnitClass("player") ~= HOLYWARD_UNIT_PRIEST then
+		this:SetScript("OnUpdate", nil)
 		return
 	end
 
 	Holyward_Initialize()
 	Loaded = true
+	this:SetScript("OnUpdate", nil)
 end
 
 local LastFullUpdate = 0
+local UpdateStage = 0
 local textTimersDisplay = ""
 
 function Holyward_OnUpdate()
@@ -1867,18 +2044,29 @@ function Holyward_OnUpdate()
 		end
 	end
 
-	-- Timer sweep/render, throttled to once a second
-	local update = false
+	-- Timer sweep/render, throttled to once a second and then SPREAD across the next few frames
+	-- instead of all landing in the same one -- PollCooldowns (bag scan + ~30 spell-table cooldown
+	-- checks), UpdateBuffTracker (14 slots), UpdateAbilityTracker (17 slots), and the timer sweep
+	-- all bundled into a single frame once a second was a real, periodic stutter (confirmed by the
+	-- user 2026-08-24) once the trackers grew to their current slot counts. Each stage still
+	-- effectively refreshes about once a second; only WHEN within that second it runs is staggered.
 	if (curTime - LastFullUpdate) >= 1 then
 		LastFullUpdate = curTime
-		update = true
+		UpdateStage = 1
 	end
 
-	if update then
+	if UpdateStage == 1 then
 		Holyward_PollCooldowns()
 		Holyward_UpdateMenuCooldowns()
+		Holyward_CheckConsumablesAutoCollapse()
+		UpdateStage = 2
+	elseif UpdateStage == 2 then
 		Holyward_UpdateBuffTracker()
+		UpdateStage = 3
+	elseif UpdateStage == 3 then
 		Holyward_UpdateAbilityTracker()
+		UpdateStage = 4
+	elseif UpdateStage == 4 then
 		ClearGraphicalTimers()
 		textTimersDisplay = ""
 		for index = 1, table.getn(SpellTimer), 1 do
@@ -1910,6 +2098,13 @@ function Holyward_OnUpdate()
 			end
 		end
 
+		-- Rendered once here, after the sweep loop above has finished building the full
+		-- GraphicalTimer list for this tick (2026-08-24 fix -- see the comment in
+		-- Holyward_DisplayTimer for why it used to run once per active timer instead of once total).
+		if HolywardConfig.Graphical then
+			HolywardAfficheTimer(GraphicalTimer, TimerTable)
+		end
+
 		if HolywardConfig.ShowSpellTimers or HolywardConfig.Graphical then
 			if not HolywardConfig.Graphical then
 				textTimersDisplay = Holyward_MsgAddColor(textTimersDisplay)
@@ -1926,6 +2121,7 @@ function Holyward_OnUpdate()
 				HideUIPanel(HolywardSpellTimerButton)
 			end
 		end
+		UpdateStage = 0
 	end
 end
 
@@ -1954,6 +2150,18 @@ function Holyward_OnEvent(event)
 	elseif event == "LEARNED_SPELL_IN_TAB" then
 		Holyward_SpellSetup()
 		Holyward_CreateMenu()
+	elseif event == "BAG_UPDATE" then
+		ManaPotionCache.dirty = true
+	elseif event == "CHAT_MSG_WHISPER" then
+		if HolywardConfig.AutoInvite and arg1 and arg2 then
+			-- Trim leading/trailing whitespace, then match the whole (lowercased) message against
+			-- the keyword list -- an exact match, not "contains", so a real sentence that happens to
+			-- include one of these words ("I'm invited to...") doesn't trigger an invite by accident.
+			local trimmed = string.gsub(string.lower(arg1), "^%s*(.-)%s*$", "%1")
+			if HOLYWARD_AUTOINVITE_KEYWORDS[trimmed] then
+				InviteByName(arg2)
+			end
+		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		SpellGroup, SpellTimer, TimerTable = Holyward_RetraitTimerCombat(SpellGroup, SpellTimer, TimerTable)
 	end
@@ -2093,22 +2301,262 @@ end
 ------------------------------------------------------------------------------------------------------
 
 -- Slot order 1-7. Names = ordered tier list (best-in-bag wins); Substring = plain-text search
--- instead (Elixir/Flask have too many named variants to enumerate).
+-- instead (Elixir/Flask have too many named variants to enumerate). Label is the fallback tooltip
+-- text for a category with nothing found, and the row label in Options -> General.
 local HOLYWARD_CONSUMABLE_CATEGORY = {
-	{ Names = HOLYWARD_DRINK, Icon = "Interface\\AddOns\\Holyward\\UI\\Water12-01" },
-	{ Names = HOLYWARD_FOOD, Icon = "Interface\\Icons\\INV_Misc_Food_11" },
-	{ Names = HOLYWARD_HEALING_POTION, Icon = "Interface\\Icons\\INV_Potion_54" },
-	{ Names = HOLYWARD_MANA_POTION, Icon = "Interface\\Icons\\INV_Potion_76" },
-	{ Substring = "Elixir", Icon = "Interface\\Icons\\INV_Potion_92" },
-	{ Substring = "Flask", Icon = "Interface\\Icons\\INV_Potion_62" },
-	{ Names = HOLYWARD_BANDAGE, Icon = "Interface\\Icons\\INV_Misc_Bandage_08" },
+	{ Names = HOLYWARD_DRINK, Icon = "Interface\\AddOns\\Holyward\\UI\\Water12-01", Label = "Water" },
+	{ Names = HOLYWARD_FOOD, Icon = "Interface\\Icons\\INV_Misc_Food_11", Label = "Food" },
+	{ Names = HOLYWARD_HEALING_POTION, Icon = "Interface\\Icons\\INV_Potion_54", Label = "Healing Potion" },
+	{ Names = HOLYWARD_MANA_POTION, Icon = "Interface\\Icons\\INV_Potion_76", Label = "Mana Potion" },
+	{ Substring = "Elixir", Icon = "Interface\\Icons\\INV_Potion_92", Label = "Elixir" },
+	{ Substring = "Flask", Icon = "Interface\\Icons\\INV_Potion_62", Label = "Flask" },
+	{ Names = HOLYWARD_BANDAGE, Icon = "Interface\\Icons\\INV_Misc_Bandage_08", Label = "Bandage" },
 }
 
--- Unlike the Buff/Utility menus (which hide a slot entirely until the spell is known), all 7
--- categories always show here -- greyed out when that category isn't currently in your bags,
--- full color and clickable when it is. Same "always visible, gray vs color" convention as the
--- Buff Tracker, since bag contents are a constantly-changing situational state, not a permanent
--- unlock like a talent/spell.
+-- Global accessors so the Options tab (a separate file) can read a category's icon/label for its
+-- checkbox row without needing HOLYWARD_CONSUMABLE_CATEGORY itself to be global.
+function Holyward_GetConsumableCategoryIcon(i)
+	return HOLYWARD_CONSUMABLE_CATEGORY[i] and HOLYWARD_CONSUMABLE_CATEGORY[i].Icon
+end
+
+function Holyward_GetConsumableCategoryLabel(i)
+	return HOLYWARD_CONSUMABLE_CATEGORY[i] and HOLYWARD_CONSUMABLE_CATEGORY[i].Label
+end
+
+-- Every distinct item in the bags matching this category, not just the single best one --
+-- { name, icon, bag, slot } per match. Backs the expanded per-category popup list.
+-- Two stacks of the same item (e.g. water split across two bags) collapse into a single match
+-- with a summed count instead of showing twice (confirmed 2026-08-24) -- deduped by the item link
+-- itself, which is identical for two stacks of the same item since consumables never carry
+-- per-stack enchant/suffix data. The first stack found is kept as the bag/slot to use; once it's
+-- used up, the next menu rebuild picks up whatever's left in the other stack.
+local function Holyward_CollectConsumableMatches(category)
+	local matches = {}
+	local byLink = {}
+	for bag = 0, 4, 1 do
+		for slot = 1, GetContainerNumSlots(bag), 1 do
+			local link = GetContainerItemLink(bag, slot)
+			if link then
+				local matched = false
+				if category.Substring then
+					matched = string.find(link, category.Substring, 1, true) ~= nil
+				elseif category.Names then
+					for i = 1, table.getn(category.Names), 1 do
+						local entry = category.Names[i]
+						local entryName = type(entry) == "table" and entry.Name or entry
+						if entryName and string.find(link, entryName, 1, true) then
+							matched = true
+							break
+						end
+					end
+				end
+				if matched then
+					local itemTexture, itemCount = GetContainerItemInfo(bag, slot)
+					itemCount = itemCount or 1
+					local existing = byLink[link]
+					if existing then
+						existing.count = existing.count + itemCount
+					else
+						local match = { name = link, icon = itemTexture, bag = bag, slot = slot, count = itemCount }
+						byLink[link] = match
+						table.insert(matches, match)
+					end
+				end
+			end
+		end
+	end
+	return matches
+end
+
+local ConsumablesGroupExpanded = {}
+local ConsumablesGroupExpireAt = {}
+local ConsumablesGroupPopups = {}
+local HOLYWARD_CONSUMABLES_POPUP_MAX = 12
+-- Popup icons are 30px; spacing must be >= that or consecutive icons overlap -- confirmed the real
+-- bug behind the "too cramped" screenshot (2026-08-24): the previous value (26) was smaller than
+-- the icon itself, a 4px overlap every step. Separate from HOLYWARD_CONSUMABLES_POPUP_GAP below,
+-- which is the (much smaller) gap from the category button to the first popup only -- the user's
+-- follow-up made clear those two distances should NOT move together.
+local HOLYWARD_CONSUMABLES_POPUP_GAP = 0
+local HOLYWARD_CONSUMABLES_POPUP_SPACING = 33
+-- Auto-collapse an expanded category list after this many seconds with no further toggle (per the
+-- user, 2026-08-24). Checked once a second via Holyward_CheckConsumablesAutoCollapse below.
+local HOLYWARD_CONSUMABLES_EXPAND_TIMEOUT = 6
+
+-- Real bag-item tooltip (name, stats, flavor text -- the same one you'd see hovering it in your
+-- actual bags) for an expanded popup icon; bag/slot are stashed on the frame by the update
+-- function below since the same pooled popup frame is reused for a different item each rebuild.
+-- Always shows something on hover (per the user, 2026-08-24): falls back to the category's generic
+-- label on the rare frame where bag/slot haven't been set yet instead of showing nothing.
+function Holyward_ConsumablesPopup_OnEnter(frame)
+	if not frame then
+		return
+	end
+	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
+	if frame.serenityBag and frame.serenitySlot then
+		GameTooltip:SetBagItem(frame.serenityBag, frame.serenitySlot)
+	else
+		local category = frame.serenityCategorySlot and HOLYWARD_CONSUMABLE_CATEGORY[frame.serenityCategorySlot]
+		GameTooltip:AddLine(category and category.Label or "", 1.0, 1.0, 1.0)
+	end
+	GameTooltip:Show()
+end
+
+function Holyward_ConsumablesPopup_OnClick(frame)
+	if frame and frame.serenityBag and frame.serenitySlot then
+		UseContainerItem(frame.serenityBag, frame.serenitySlot)
+	end
+end
+
+-- Anchors the j-th popup for `slot` off its category button, stacking further in
+-- HolywardConfig.ConsumablesExpandDirection with each index -- created lazily, one small pool per
+-- category slot, and parked in the TOOLTIP strata so the expanded list always renders above every
+-- other Holyward window (per the user's request, 2026-08-24).
+local function Holyward_GetConsumablesGroupPopup(slot, j)
+	if not ConsumablesGroupPopups[slot] then
+		ConsumablesGroupPopups[slot] = {}
+	end
+	if not ConsumablesGroupPopups[slot][j] then
+		local slotFrame = getglobal("HolywardConsumablesMenu" .. slot)
+		if not slotFrame then
+			return nil
+		end
+		local popup = CreateFrame("Button", nil, slotFrame)
+		popup:SetWidth(30)
+		popup:SetHeight(30)
+		popup:SetFrameStrata("TOOLTIP")
+		popup:EnableMouse(true)
+		popup:RegisterForClicks("LeftButtonUp")
+		local tex = popup:CreateTexture(nil, "ARTWORK")
+		tex:SetAllPoints(popup)
+		popup.serenityIcon = tex
+		local countText = popup:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		countText:SetPoint("BOTTOMRIGHT", popup, "BOTTOMRIGHT", -1, 1)
+		popup.serenityCount = countText
+		popup.serenityCategorySlot = slot
+		popup:SetScript("OnEnter", function()
+			Holyward_ConsumablesPopup_OnEnter(this)
+		end)
+		popup:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+		popup:SetScript("OnClick", function()
+			Holyward_ConsumablesPopup_OnClick(this)
+		end)
+		popup:Hide()
+		ConsumablesGroupPopups[slot][j] = popup
+	end
+	return ConsumablesGroupPopups[slot][j]
+end
+
+local function Holyward_UpdateConsumablesGroupPopup(slot, matches)
+	local shown = 0
+	if ConsumablesGroupExpanded[slot] and matches then
+		shown = table.getn(matches)
+		if shown > HOLYWARD_CONSUMABLES_POPUP_MAX then
+			shown = HOLYWARD_CONSUMABLES_POPUP_MAX
+		end
+	end
+	local direction = HolywardConfig.ConsumablesExpandDirection or "UP"
+	local slotFrame = Holyward_CachedGlobal("HolywardConsumablesMenu" .. slot)
+	for j = 1, HOLYWARD_CONSUMABLES_POPUP_MAX, 1 do
+		local popup = Holyward_GetConsumablesGroupPopup(slot, j)
+		if popup then
+			if j <= shown then
+				local match = matches[j]
+				popup.serenityIcon:SetTexture(match.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
+				popup.serenityBag = match.bag
+				popup.serenitySlot = match.slot
+				-- Only show a number for an actual stack (2+) -- a single item doesn't need "1" on it.
+				popup.serenityCount:SetText(match.count > 1 and match.count or "")
+				popup:ClearAllPoints()
+				-- j=1 sits right against the category button (HOLYWARD_CONSUMABLES_POPUP_GAP); every
+				-- later item is a full HOLYWARD_CONSUMABLES_POPUP_SPACING pitch further out. Kept as
+				-- two separate constants per the user's explicit follow-up (2026-08-24): the gap to
+				-- the button should shrink, but the pitch between items themselves needs room to NOT
+				-- overlap, not less.
+				local offset = HOLYWARD_CONSUMABLES_POPUP_GAP + (j - 1) * HOLYWARD_CONSUMABLES_POPUP_SPACING
+				if direction == "DOWN" then
+					popup:SetPoint("TOP", slotFrame, "BOTTOM", 0, -offset)
+				elseif direction == "LEFT" then
+					popup:SetPoint("RIGHT", slotFrame, "LEFT", -offset, 0)
+				elseif direction == "RIGHT" then
+					popup:SetPoint("LEFT", slotFrame, "RIGHT", offset, 0)
+				else
+					popup:SetPoint("BOTTOM", slotFrame, "TOP", 0, offset)
+				end
+				popup:Show()
+			else
+				popup.serenityBag = nil
+				popup.serenitySlot = nil
+				popup:Hide()
+			end
+		end
+	end
+end
+
+-- Collapses every category's expanded popup list -- called when the whole Consumables menu closes,
+-- so nothing is left floating once the trigger button's own menu is gone.
+local function Holyward_CollapseAllConsumablesGroups()
+	for slot = 1, table.getn(HOLYWARD_CONSUMABLE_CATEGORY), 1 do
+		if ConsumablesGroupExpanded[slot] then
+			ConsumablesGroupExpanded[slot] = nil
+			ConsumablesGroupExpireAt[slot] = nil
+			Holyward_UpdateConsumablesGroupPopup(slot, nil)
+		end
+	end
+end
+
+-- Called once a second from Holyward_PollCooldowns (see Holyward_OnUpdate's stage machine) --
+-- auto-collapses any expanded category list that's been sitting open past its timeout (per the
+-- user, 2026-08-24), same behavior as the Buff Tracker's own group popups.
+function Holyward_CheckConsumablesAutoCollapse()
+	local now = GetTime()
+	for slot = 1, table.getn(HOLYWARD_CONSUMABLE_CATEGORY), 1 do
+		if ConsumablesGroupExpanded[slot] and ConsumablesGroupExpireAt[slot] and now >= ConsumablesGroupExpireAt[slot] then
+			ConsumablesGroupExpanded[slot] = nil
+			ConsumablesGroupExpireAt[slot] = nil
+			Holyward_UpdateConsumablesGroupPopup(slot, nil)
+		end
+	end
+end
+
+-- Both left and right click toggle the same thing now (2026-08-24): expand/collapse everything in
+-- that category. Use a specific item by clicking its icon in the expanded list instead.
+function Holyward_ConsumablesCategoryClick(slot)
+	local category = HOLYWARD_CONSUMABLE_CATEGORY[slot]
+	if not category then
+		return
+	end
+	ConsumablesGroupExpanded[slot] = not ConsumablesGroupExpanded[slot]
+	ConsumablesGroupExpireAt[slot] = ConsumablesGroupExpanded[slot] and (GetTime() + HOLYWARD_CONSUMABLES_EXPAND_TIMEOUT) or nil
+	local matches = ConsumablesGroupExpanded[slot] and Holyward_CollectConsumableMatches(category) or nil
+	Holyward_UpdateConsumablesGroupPopup(slot, matches)
+end
+
+-- Real tooltip for the category's main icon: the best-found item's own tooltip when something is
+-- in bags, otherwise just the category name (nothing to show a real tooltip for).
+function Holyward_ConsumablesCategoryTooltip(button)
+	local slot = button and button.serenityConsumableSlot
+	local category = slot and HOLYWARD_CONSUMABLE_CATEGORY[slot]
+	if not category then
+		return
+	end
+	local found = ConsumablesFound[slot]
+	if found then
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+		GameTooltip:SetBagItem(found.Bag, found.Slot)
+		GameTooltip:Show()
+	else
+		Holyward_BuildTooltip(button, "ConsumablesItem", "ANCHOR_RIGHT", nil, category.Label)
+	end
+end
+
+-- Unlike the Buff/Utility menus (which hide a slot entirely until the spell is known), enabled
+-- categories always show here -- greyed out when that category isn't currently in your bags, full
+-- color when it is. Same "always visible, gray vs color" convention as the Buff Tracker, since bag
+-- contents are a constantly-changing situational state, not a permanent unlock like a talent/spell.
+-- Categories turned off in Options -> General are skipped entirely (hidden, not just greyed).
 local function Holyward_BuildConsumablesMenu()
 	ConsumablesMenuCreate = {}
 	ConsumablesFound = {}
@@ -2116,43 +2564,53 @@ local function Holyward_BuildConsumablesMenu()
 	local position = nil
 	for slot = 1, table.getn(HOLYWARD_CONSUMABLE_CATEGORY), 1 do
 		local category = HOLYWARD_CONSUMABLE_CATEGORY[slot]
-		local bag, itemSlot
-		if category.Substring then
-			bag, itemSlot = Holyward_ScanBagsForSubstring(category.Substring)
-		else
-			bag, itemSlot = Holyward_ScanBagsForNames(category.Names)
-		end
-
 		local button = getglobal("HolywardConsumablesMenu" .. slot)
-		button:SetNormalTexture(category.Icon)
-		-- SetVertexColor is a Texture method, not a Button one -- has to go on the NormalTexture
-		-- object itself, which is what threw "attempt to call method 'SetVertexColor' (a nil value)".
-		local buttonTexture = button:GetNormalTexture()
-		if bag then
-			ConsumablesFound[slot] = { Bag = bag, Slot = itemSlot }
-			if buttonTexture then
-				buttonTexture:SetVertexColor(1, 1, 1)
+		if not (HolywardConfig.ConsumablesEnabled and HolywardConfig.ConsumablesEnabled[slot] == false) then
+			local bag, itemSlot
+			if category.Substring then
+				bag, itemSlot = Holyward_ScanBagsForSubstring(category.Substring)
+			else
+				bag, itemSlot = Holyward_ScanBagsForNames(category.Names)
 			end
-		else
-			if buttonTexture then
-				buttonTexture:SetVertexColor(0.35, 0.35, 0.35)
-			end
-		end
 
-		button:ClearAllPoints()
-		if position == nil then
-			button:SetPoint("CENTER", "HolywardConsumablesButton", "CENTER", 3000, 3000)
+			button.serenityConsumableSlot = slot
+			button:SetNormalTexture(category.Icon)
+			-- SetVertexColor is a Texture method, not a Button one -- has to go on the NormalTexture
+			-- object itself, which is what threw "attempt to call method 'SetVertexColor' (a nil value)".
+			local buttonTexture = button:GetNormalTexture()
+			if bag then
+				ConsumablesFound[slot] = { Bag = bag, Slot = itemSlot }
+				if buttonTexture then
+					buttonTexture:SetVertexColor(1, 1, 1)
+				end
+			else
+				if buttonTexture then
+					buttonTexture:SetVertexColor(0.35, 0.35, 0.35)
+				end
+			end
+
+			button:ClearAllPoints()
+			if position == nil then
+				button:SetPoint("CENTER", "HolywardConsumablesButton", "CENTER", 3000, 3000)
+			else
+				button:SetPoint(
+					"CENTER",
+					"HolywardConsumablesMenu" .. position,
+					"CENTER",
+					(36 / HolywardConfig.ConsumablesMenuPos) * 31,
+					0
+				)
+			end
+			position = slot
+			table.insert(ConsumablesMenuCreate, button)
 		else
-			button:SetPoint(
-				"CENTER",
-				"HolywardConsumablesMenu" .. position,
-				"CENTER",
-				(36 / HolywardConfig.ConsumablesMenuPos) * 31,
-				0
-			)
+			if ConsumablesGroupExpanded[slot] then
+				ConsumablesGroupExpanded[slot] = nil
+				ConsumablesGroupExpireAt[slot] = nil
+				Holyward_UpdateConsumablesGroupPopup(slot, nil)
+			end
+			button:Hide()
 		end
-		position = slot
-		table.insert(ConsumablesMenuCreate, button)
 	end
 
 	for i = 1, table.getn(ConsumablesMenuCreate), 1 do
@@ -2176,6 +2634,7 @@ function Holyward_ConsumablesButtonClick(button)
 	MenuState.ConsumablesMenuShow = not MenuState.ConsumablesMenuShow
 	if not MenuState.ConsumablesMenuShow then
 		MenuState.ConsumablesShow = false
+		Holyward_CollapseAllConsumablesGroups()
 		if table.getn(ConsumablesMenuCreate) > 0 then
 			ConsumablesMenuCreate[1]:ClearAllPoints()
 			ConsumablesMenuCreate[1]:SetPoint("CENTER", "HolywardConsumablesButton", "CENTER", 3000, 3000)
@@ -2187,27 +2646,20 @@ function Holyward_ConsumablesButtonClick(button)
 		for i = 1, table.getn(ConsumablesMenuCreate), 1 do
 			ConsumablesMenuCreate[i]:SetAlpha(1)
 		end
-		ConsumablesMenuCreate[1]:ClearAllPoints()
-		-- Straight right of the trigger icon, not diagonal (unlike Buff/Utility menus which open
-		-- up-and-over) -- this one wasn't asked to angle.
-		ConsumablesMenuCreate[1]:SetPoint(
-			"CENTER",
-			"HolywardConsumablesButton",
-			"CENTER",
-			(36 / HolywardConfig.ConsumablesMenuPos) * 31,
-			0
-		)
+		if table.getn(ConsumablesMenuCreate) > 0 then
+			ConsumablesMenuCreate[1]:ClearAllPoints()
+			-- Straight right of the trigger icon, not diagonal (unlike Buff/Utility menus which open
+			-- up-and-over) -- this one wasn't asked to angle.
+			ConsumablesMenuCreate[1]:SetPoint(
+				"CENTER",
+				"HolywardConsumablesButton",
+				"CENTER",
+				(36 / HolywardConfig.ConsumablesMenuPos) * 31,
+				0
+			)
+		end
 		MenuState.AlphaConsumablesVar = GetTime() + 6
 	end
-end
-
-function Holyward_ConsumablesCast(slot)
-	local found = ConsumablesFound[slot]
-	if found then
-		UseContainerItem(found.Bag, found.Slot)
-	end
-	MenuState.AlphaConsumablesMenu = 1
-	MenuState.AlphaConsumablesVar = GetTime() + 3
 end
 
 ------------------------------------------------------------------------------------------------------
@@ -2459,7 +2911,7 @@ local function Holyward_UpdateCooldownIcons(spellList, iconPrefix)
 	for slot = 1, table.getn(spellList), 1 do
 		local id = HOLYWARD_SPELL_TABLE[spellList[slot]].ID
 		if id then
-			local button = getglobal(iconPrefix .. slot)
+			local button = Holyward_CachedGlobal(iconPrefix .. slot)
 			local icon = button and button:GetNormalTexture()
 			if icon then
 				local start, duration = GetSpellCooldown(id, BOOKTYPE_SPELL)

@@ -943,17 +943,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Water");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(1);
+				Holyward_ConsumablesCategoryClick(1);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\AddOns\Holyward\UI\Water12-01">
@@ -986,17 +986,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Food");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(2);
+				Holyward_ConsumablesCategoryClick(2);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Icons\INV_Misc_Food_11">
@@ -1034,17 +1034,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Healing Potion");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(3);
+				Holyward_ConsumablesCategoryClick(3);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Icons\INV_Potion_54">
@@ -1082,17 +1082,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Mana Potion");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(4);
+				Holyward_ConsumablesCategoryClick(4);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Icons\INV_Potion_76">
@@ -1130,17 +1130,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Elixir");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(5);
+				Holyward_ConsumablesCategoryClick(5);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Icons\INV_Potion_92">
@@ -1178,17 +1178,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Flask");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(6);
+				Holyward_ConsumablesCategoryClick(6);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Icons\INV_Potion_62">
@@ -1226,17 +1226,17 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
 			<OnEnter>
-				Holyward_BuildTooltip(this, "ConsumablesItem", "ANCHOR_RIGHT", nil, "Bandage");
+				Holyward_ConsumablesCategoryTooltip(this);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				Holyward_ConsumablesCast(7);
+				Holyward_ConsumablesCategoryClick(7);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Icons\INV_Misc_Bandage_08">
@@ -2245,6 +2245,49 @@
 				</Layers>
 				<Frames>
 					<Cooldown name="HolywardBuffTracker13Cooldown">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame name="HolywardBuffTracker14" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HolywardBuffTracker13" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="HolywardBuffTracker14Icon">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="HolywardBuffTracker14Text" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="HolywardBuffTracker14Cooldown">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT"/>

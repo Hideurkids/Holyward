@@ -237,10 +237,16 @@ local SPELL_TIMER_ROWS = {
 	{ "Shadow Word: Pain", 27 }, { "Holy Fire", 28 },
 }
 
+-- Order must match HOLYWARD_CONSUMABLE_CATEGORY in Holyward.lua exactly.
+local CONSUMABLES_CATEGORY_ROWS = { "Water", "Food", "Healing Potion", "Mana Potion", "Elixir", "Flask", "Bandage" }
+
+-- Appended at the end (slot 14), not inserted among the existing 13 -- inserting would shift every
+-- later slot's index and silently reassign any user's already-saved per-slot enable/disable state
+-- (HolywardConfig.BuffTrackerEnabled, indexed positionally) to the wrong buff.
 local BUFF_TRACKER_ROWS = {
 	"Well Fed", "Flask", "Elixirs (grouped)", "Weapon Buff",
 	"Kreeg's Stout Beatdown", "Fortitude", "Divine Spirit", "Arcane Intellect", "Mark of the Wild",
-	"Battle Shout", "Blessings (grouped)", "Thorns", "Inner Fire",
+	"Battle Shout", "Blessings (grouped)", "Thorns", "Inner Fire", "Shadow Protection",
 }
 
 
@@ -252,9 +258,7 @@ local function SpellIconGetter(spellIndex)
 end
 
 local function CreateGeneralTab()
-	return {
-		name = "General", type = "group", order = 1,
-		args = {
+	local args = {
 			interface_header = { type = "header", order = 1, name = "Interface" },
 			locked = {
 				type = "toggle", order = 1.5, width = "full",
@@ -291,6 +295,18 @@ local function CreateGeneralTab()
 					HolywardConfig.MouseoverCast = value
 				end,
 			},
+			autoInvite = {
+				type = "toggle", order = 2.6, width = "full",
+				name = "Auto-invite on whisper",
+				desc = "Automatically invites anyone who whispers you exactly \"inv\", \"invite\", or \"123\" (case-insensitive, whole message only -- a real sentence containing one of those words won't trigger it).",
+				image = "Interface\\Icons\\Spell_Holy_SealOfSalvation",
+				get = function()
+					return HolywardConfig.AutoInvite
+				end,
+				set = function(info, value)
+					HolywardConfig.AutoInvite = value
+				end,
+			},
 			sphereSize = {
 				type = "range", order = 2.7, width = "full",
 				name = "Sphere size",
@@ -316,8 +332,43 @@ local function CreateGeneralTab()
 					Holyward_RecenterWindows()
 				end,
 			},
-		},
 	}
+	return { name = "General", type = "group", order = 1, args = args }
+end
+
+local function CreateConsumablesTab()
+	local args = {
+		direction_header = { type = "header", order = 1, name = "Expanded List" },
+		consumablesDirection = {
+			type = "select", order = 2, width = "full",
+			name = "Expand direction",
+			desc = "Which way the full list opens when you click a Consumables category.",
+			values = { UP = "Up", DOWN = "Down", LEFT = "Left", RIGHT = "Right" },
+			get = function()
+				return HolywardConfig.ConsumablesExpandDirection
+			end,
+			set = function(info, value)
+				HolywardConfig.ConsumablesExpandDirection = value
+			end,
+		},
+		categories_header = { type = "header", order = 10, name = "Categories" },
+	}
+	for i = 1, table.getn(CONSUMABLES_CATEGORY_ROWS), 1 do
+		local slot = i
+		args["consumeCat" .. i] = {
+			type = "toggle", order = 10 + i, name = CONSUMABLES_CATEGORY_ROWS[i],
+			image = function()
+				return Holyward_GetConsumableCategoryIcon(slot)
+			end,
+			get = function()
+				return HolywardConfig.ConsumablesEnabled[slot]
+			end,
+			set = function(info, value)
+				HolywardConfig.ConsumablesEnabled[slot] = value
+			end,
+		}
+	end
+	return { name = "Consumables", type = "group", order = 2, args = args }
 end
 
 local function CreateTrackingTab()
@@ -509,7 +560,25 @@ local function CreateBuffsTab()
 				Holyward_ApplyTrackerBackgrounds()
 			end,
 		},
+		-- Category toggles below use order = 1+i for i=1..14 (orders 2..15) -- this header/select
+		-- must sit above 15, or it collides with the last category's own order and the two sections
+		-- interleave unpredictably (confirmed 2026-08-24: Shadow Protection's checkbox, order 15,
+		-- was landing INSIDE this section instead of completing the category grid, because it tied
+		-- with direction_header's own order at the time).
 		categories_header = { type = "header", order = 1, name = "Buff Tracker categories" },
+		direction_header = { type = "header", order = 30, name = "Elixir / Blessing expand list" },
+		buffTrackerDirection = {
+			type = "select", order = 31, width = "full",
+			name = "Expand direction",
+			desc = "Which way the Elixir/Blessing group's full buff list opens when you click it.",
+			values = { UP = "Up", DOWN = "Down", LEFT = "Left", RIGHT = "Right" },
+			get = function()
+				return HolywardConfig.BuffTrackerExpandDirection
+			end,
+			set = function(info, value)
+				HolywardConfig.BuffTrackerExpandDirection = value
+			end,
+		},
 		appearance2_header = { type = "header", order = 49, name = "Icon size and spacing" },
 		iconSize = {
 			type = "range", order = 50, width = "double",
@@ -581,6 +650,7 @@ local function CreateOptionsTable()
 		childGroups = "tab",
 		args = {
 			general_tab = CreateGeneralTab(),
+			consumables_tab = CreateConsumablesTab(),
 			tracking_tab = CreateTrackingTab(),
 			timers_tab = CreateTimersTab(),
 			buffs_tab = CreateBuffsTab(),
