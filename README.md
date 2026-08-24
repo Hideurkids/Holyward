@@ -23,7 +23,7 @@ Holyward puts every Priest-specific tool one click away from a single draggable 
   theme, not a stock Blizzard panel bolted on).
 
 <!-- Screenshot: Buff Tracker and Ability Tracker close-up -->
-![Trackers](./screenshots/trackers.png)
+![Trackers](./screenshots/tracking.png)
 
 ## Features
 
@@ -47,7 +47,7 @@ Five buttons orbit the sphere, each opening a chained popup of icons:
 | Professions | Every profession/secondary-skill quick-use spell in your spellbook (Cooking, First Aid, Fishing, Smelting, Find Minerals, etc.) |
 
 <!-- Screenshot: satellite menus expanded, showing a couple of the popups open -->
-![Satellite menus](./screenshots/menus.png)
+![Satellite menus](./screenshots/satelite.png)
 
 ### Buff Tracker
 A row of icons for the raid/class buffs a Priest cares about: Well Fed, Flask, Elixirs
@@ -80,7 +80,13 @@ enable/disable toggles for both trackers, icon size and spacing sliders, and a o
 "recenter everything" button if a window ever drifts off-screen.
 
 <!-- Screenshot: settings window, General tab -->
-![Settings](./screenshots/settings.png)
+![Settings](./screenshots/Options.png)
+
+<!-- Screenshot: settings window, Timers tab -->
+![Timers tab](./screenshots/timers.png)
+
+<!-- Screenshot: settings window, Buffs tab -->
+![Buffs tab](./screenshots/buffsoptions.png)
 
 ## Installation
 
