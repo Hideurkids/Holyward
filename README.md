@@ -22,8 +22,7 @@ Holyward puts every Priest-specific tool one click away from a single draggable 
 - A settings window that looks and feels like it belongs on this client (dark AceConfig
   theme, not a stock Blizzard panel bolted on).
 
-<!-- Screenshot: Buff Tracker and Ability Tracker close-up -->
-![Trackers](./screenshots/tracking.png)
+
 
 ## Features
 
@@ -56,6 +55,8 @@ Beatdown, Fortitude, Divine Spirit, Arcane Intellect, Mark of the Wild, Battle S
 Paladin Blessings (grouped, same right-click expand), Thorns, and Inner Fire. Gray means
 missing, colored means active, with a countdown to expiration. Hover any icon for its real
 tooltip; click Fortitude/Divine Spirit/Inner Fire to cast them directly from the tracker.
+<!-- Screenshot: Buffs tracker -->
+![Buffs tab](./screenshots/buffs.png)
 
 ### Ability Tracker
 Seventeen configurable slots covering every Priest cooldown, DoT, and proc worth watching at a
@@ -64,6 +65,8 @@ Ascendance, Enlighten, Shackle Undead, Weakened Soul, Devouring Plague, Shadow W
 Purifying Flames, Searing Light, Mana Potion, and Inner Fire. Drag icons to reorder them,
 resize the whole tracker from the corner grip, and toggle individual slots off if you don't
 need them (a Shadow priest can hide the Holy/Disc-only ones and vice versa).
+<!-- Screenshot: Buff Tracker and Ability Tracker close-up -->
+![Trackers](./screenshots/tracking.png)
 
 ### Mouseover casting
 Toggle it on in Options → General and every spell or item on any action bar targets whatever
@@ -72,21 +75,26 @@ resolves the exact spell **rank** on your action bar (so a low-rank heal you pla
 mana doesn't silently upgrade itself), and routes through Nampower's own queue-safe casting API
 when Nampower is detected, so it keeps working correctly even when you spam a key through the
 global cooldown.
+<!-- Screenshot: settings window, General tab -->
+![Settings](./screenshots/Options.png)
 
 ### Settings window
 A full AceConfig-based options dialog with a dark theme matching this client's UI conventions,
 split into General, Tracking, Timers, and Buffs tabs — lock/unlock windows, per-slot
 enable/disable toggles for both trackers, icon size and spacing sliders, and a one-click
 "recenter everything" button if a window ever drifts off-screen.
-
-<!-- Screenshot: settings window, General tab -->
-![Settings](./screenshots/Options.png)
-
-<!-- Screenshot: settings window, Timers tab -->
-![Timers tab](./screenshots/timers.png)
-
 <!-- Screenshot: settings window, Buffs tab -->
 ![Buffs tab](./screenshots/buffsoptions.png)
+
+### Timers
+A separate, classic Necrosis-style active-timer list — a floating column of text lines (with
+optional graphical bars) that appears next to the sphere only while something is actually
+running, rather than a fixed grid of icons. Anchor position, growth direction (up/down,
+left/right), and countdown text color are all configurable, and each spell that's allowed to
+spawn an entry can be toggled individually in Options → Timers, so you can trim the list down to
+just what you personally want to see fly by mid-fight.
+<!-- Screenshot: Timers -->
+![Timers tab](./screenshots/timers.png)
 
 ## Installation
 
