@@ -48,7 +48,18 @@ function Holyward_Initialize()
 
 	Holyward_SpellSetup()
 	Holyward_CreateMenu()
-	Holyward_ApplySatelliteState()
+	-- DEFERRED (2026-09-02): calling Holyward_ApplySatelliteState() synchronously here -- confirmed
+	-- the likely cause of the user's "sometimes on /reload the satellite buttons collapse to the
+	-- center" report. It calls Holyward_CaptureSatelliteOffsets(), which reads each satellite
+	-- button's live on-screen GetCenter() to compute its offset from the sphere -- but at this exact
+	-- point in the login/reload sequence, WoW hasn't necessarily run a first layout pass on these
+	-- frames yet, so GetCenter() can return a stale/wrong position (the frame not yet moved off
+	-- whatever it defaulted to) instead of the real XML-anchored one. That bad reading then gets
+	-- cached as holywardRestX/RestY and used for the rest of the session, at the sphere's own
+	-- center. Deferring to the first real OnUpdate tick (same pattern already proven for this exact
+	-- category of "too early" bug elsewhere) gives the client at least one full frame to finish
+	-- laying out before anything reads a position back.
+	Holyward_NeedsSatelliteStateApply = true
 	Holyward_ApplySphereSize()
 	Holyward_ApplyTrackerVisibility()
 	Holyward_NormalizeAbilityOrder()

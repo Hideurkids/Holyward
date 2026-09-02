@@ -1999,6 +1999,14 @@ function Holyward_OnUpdate()
 		return
 	end
 
+	-- Deferred from Holyward_Initialize (see HolywardInitialize.lua's own comment) -- runs exactly
+	-- once, on the first real OnUpdate tick after login/reload, by which point the client has had at
+	-- least one full frame to lay out the satellite buttons for real.
+	if Holyward_NeedsSatelliteStateApply then
+		Holyward_NeedsSatelliteStateApply = false
+		Holyward_ApplySatelliteState()
+	end
+
 	Holyward_UpdateSatelliteAnim()
 	Holyward_UpdateSkin()
 
