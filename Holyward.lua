@@ -13,6 +13,13 @@ Default_HolywardConfig = {
 	UtilityMenuPos = 34,
 	ConsumablesMenuPos = 34,
 	ProfessionsMenuPos = 34,
+	-- Master switch for the whole timer feature (2026-09-02, per the user): when false, no spell
+	-- cast or cooldown poll is allowed to insert a new entry into SpellTimer at all, and
+	-- HolywardSpellTimerButton (the timer anchor button -- also doubles as a Hearthstone-cast
+	-- button, see its OnClick in Holyward.xml) is force-hidden. ShowSpellTimers/Graphical below only
+	-- control DISPLAY MODE (text list vs. icon grid) for an already-enabled tracker; this is the one
+	-- switch that turns tracking off entirely.
+	TimersEnabled = true,
 	ShowSpellTimers = true,
 	Graphical = true,
 	Yellow = true,
@@ -608,6 +615,14 @@ function Holyward_SpellManagement()
 	if not SpellCast.Name then
 		return
 	end
+	-- Master switch (2026-09-02): still clear SpellCast.Name even when disabled -- this function is
+	-- what normally consumes/clears it once a cast has been considered, and leaving it set would
+	-- either cause reprocessing on a later call or let a stale cast surface as a timer the moment
+	-- the feature gets re-enabled.
+	if not HolywardConfig.TimersEnabled then
+		SpellCast.Name = nil
+		return
+	end
 
 	for spell = 1, table.getn(HOLYWARD_SPELL_TABLE), 1 do
 		-- Type 3 (cooldowns) are no longer cast-triggered: Holyward_PollCooldowns reads them
@@ -644,6 +659,11 @@ end
 ------------------------------------------------------------------------------------------------------
 
 function Holyward_PollCooldowns()
+	-- Master switch (2026-09-02): stateless entry point (reads live cooldowns fresh every call), so
+	-- unlike Holyward_SpellManagement there's no pending state to clear here -- just skip the work.
+	if not HolywardConfig.TimersEnabled then
+		return
+	end
 	for spell = 1, table.getn(HOLYWARD_SPELL_TABLE), 1 do
 		if HOLYWARD_SPELL_TABLE[spell].Type == 3 and HOLYWARD_SPELL_TABLE[spell].ID then
 			local start, duration = GetSpellCooldown(HOLYWARD_SPELL_TABLE[spell].ID, BOOKTYPE_SPELL)
@@ -1982,7 +2002,11 @@ function Holyward_OnUpdate()
 	Holyward_UpdateSatelliteAnim()
 	Holyward_UpdateSkin()
 
-	if not HolywardSpellTimerButton:IsVisible() then
+	-- CONFIRMED (2026-09-02): this ran unconditionally, every single frame -- without the
+	-- TimersEnabled check, it would re-show the button the very next frame after the throttled
+	-- once-a-second block below calls HideUIPanel for the master switch, undoing the hide almost
+	-- instantly.
+	if HolywardConfig.TimersEnabled and not HolywardSpellTimerButton:IsVisible() then
 		ShowUIPanel(HolywardSpellTimerButton)
 	end
 
@@ -2105,7 +2129,11 @@ function Holyward_OnUpdate()
 			HolywardAfficheTimer(GraphicalTimer, TimerTable)
 		end
 
-		if HolywardConfig.ShowSpellTimers or HolywardConfig.Graphical then
+		-- Master switch (2026-09-02) added in front of the pre-existing ShowSpellTimers/Graphical
+		-- OR: without it, HolywardSpellTimerButton stayed visible whenever Graphical was true
+		-- (the default) no matter what ShowSpellTimers said -- TimersEnabled now overrides both and
+		-- is the one condition that reliably forces the else-branch HideUIPanel below.
+		if HolywardConfig.TimersEnabled and (HolywardConfig.ShowSpellTimers or HolywardConfig.Graphical) then
 			if not HolywardConfig.Graphical then
 				textTimersDisplay = Holyward_MsgAddColor(textTimersDisplay)
 				HolywardListSpells:SetText(textTimersDisplay)
