@@ -130,7 +130,8 @@
 		<NormalTexture file="Interface\AddOns\Holyward\UI\SphereCustom-01"/>
 	</Button>
 
-	<Button name="HolywardBuffMenuButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+	<!-- Not movable directly (2026-09-02, per the user): see HolywardMountButton's own comment. -->
+	<Button name="HolywardBuffMenuButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="34" y="34"/>
 		</Size>
@@ -143,7 +144,6 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
@@ -156,15 +156,6 @@
 			<OnClick>
 				Holyward_BuffMenu(arg1);
 			</OnClick>
-			<OnDragStart>
-				Holyward_OnDragStart(this);
-			</OnDragStart>
-			<OnDragStop>
-				Holyward_OnDragStop(this);
-			</OnDragStop>
-			<OnMouseUp>
-				Holyward_OnDragStop(this);
-			</OnMouseUp>
 		</Scripts>
 		<NormalTexture file="Interface\AddOns\Holyward\UI\Holy\BuffMenuButton-01">
 			<Size>
@@ -491,7 +482,8 @@
 		</Frames>
 	</Button>
 
-	<Button name="HolywardUtilityMenuButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+	<!-- Not movable directly (2026-09-02, per the user): see HolywardMountButton's own comment. -->
+	<Button name="HolywardUtilityMenuButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="34" y="34"/>
 		</Size>
@@ -504,7 +496,6 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
 				HideUIPanel(this);
 			</OnLoad>
@@ -517,15 +508,6 @@
 			<OnClick>
 				Holyward_UtilityMenu(arg1);
 			</OnClick>
-			<OnDragStart>
-				Holyward_OnDragStart(this);
-			</OnDragStart>
-			<OnDragStop>
-				Holyward_OnDragStop(this);
-			</OnDragStop>
-			<OnMouseUp>
-				Holyward_OnDragStop(this);
-			</OnMouseUp>
 		</Scripts>
 		<NormalTexture file="Interface\AddOns\Holyward\UI\Holy\SpellMenuButton-01">
 			<Size>
@@ -852,7 +834,10 @@
 		</Frames>
 	</Button>
 
-	<Button name="HolywardMountButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+	<!-- Not movable directly (2026-09-02, per the user): satellite buttons should only ever
+	     reposition via the sphere's own expand/collapse animation, never by dragging them
+	     individually. movable/RegisterForDrag/OnDragStart/OnDragStop/OnMouseUp all removed. -->
+	<Button name="HolywardMountButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="34" y="34"/>
 		</Size>
@@ -865,7 +850,6 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
@@ -877,21 +861,13 @@
 			<OnClick>
 				Holyward_UseMount(arg1);
 			</OnClick>
-			<OnDragStart>
-				Holyward_OnDragStart(this);
-			</OnDragStart>
-			<OnDragStop>
-				Holyward_OnDragStop(this);
-			</OnDragStop>
-			<OnMouseUp>
-				Holyward_OnDragStop(this);
-			</OnMouseUp>
 		</Scripts>
 		<NormalTexture file="Interface\AddOns\Holyward\UI\MountCustom-01"/>
 		<HighlightTexture file="Interface\AddOns\Holyward\UI\MountCustom-01" alphaMode="ADD"/>
 	</Button>
 
-	<Button name="HolywardConsumablesButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+	<!-- Not movable directly (2026-09-02, per the user): see HolywardMountButton's own comment. -->
+	<Button name="HolywardConsumablesButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="34" y="34"/>
 		</Size>
@@ -904,7 +880,6 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
@@ -916,15 +891,6 @@
 			<OnClick>
 				Holyward_ConsumablesButtonClick(arg1);
 			</OnClick>
-			<OnDragStart>
-				Holyward_OnDragStart(this);
-			</OnDragStart>
-			<OnDragStop>
-				Holyward_OnDragStop(this);
-			</OnDragStop>
-			<OnMouseUp>
-				Holyward_OnDragStop(this);
-			</OnMouseUp>
 		</Scripts>
 		<NormalTexture file="Interface\AddOns\Holyward\UI\PotionCustom-01"/>
 		<HighlightTexture file="Interface\AddOns\Holyward\UI\PotionCustom-01" alphaMode="ADD"/>
@@ -1262,7 +1228,8 @@
 		</Layers>
 	</Button>
 
-	<Button name="HolywardProfessionsButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent" movable="true">
+	<!-- Not movable directly (2026-09-02, per the user): see HolywardMountButton's own comment. -->
+	<Button name="HolywardProfessionsButton" hidden="false" enableMouse="true" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="34" y="34"/>
 		</Size>
@@ -1275,7 +1242,6 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp");
 			</OnLoad>
 			<OnEnter>
@@ -1287,15 +1253,6 @@
 			<OnClick>
 				Holyward_ProfessionsButtonClick(arg1);
 			</OnClick>
-			<OnDragStart>
-				Holyward_OnDragStart(this);
-			</OnDragStart>
-			<OnDragStop>
-				Holyward_OnDragStop(this);
-			</OnDragStop>
-			<OnMouseUp>
-				Holyward_OnDragStop(this);
-			</OnMouseUp>
 		</Scripts>
 		<NormalTexture file="Interface\AddOns\Holyward\UI\Professions-01">
 			<Size>

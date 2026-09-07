@@ -484,6 +484,33 @@ end
 local function CreateTimersTab()
 	local args = {
 		list_header = { type = "header", order = 1, name = "Timer List" },
+		-- Master switch (2026-09-02, per the user): turns off spell/cooldown tracking entirely AND
+		-- hides HolywardSpellTimerButton (the timer anchor button) -- for someone who doesn't want
+		-- to see the timer feature at all. Distinct from "showTimers" below, which only controls the
+		-- text-list DISPLAY MODE of an already-enabled tracker (and, before this switch existed,
+		-- couldn't actually hide the button on its own whenever Graphical was also on). Applied
+		-- immediately in `set` rather than waiting for the next once-a-second update tick, so the
+		-- button visibly shows/hides the instant the checkbox is toggled.
+		timersEnabled = {
+			type = "toggle", order = 1.5, width = "full",
+			name = "Enable timer tracking",
+			desc = "Master switch for the whole timer feature -- turns off spell/cooldown tracking and hides the timer button entirely. Turn this off if you don't want to see it.",
+			get = function()
+				return HolywardConfig.TimersEnabled
+			end,
+			set = function(info, value)
+				HolywardConfig.TimersEnabled = value
+				if value then
+					if HolywardSpellTimerButton and not HolywardSpellTimerButton:IsVisible() then
+						ShowUIPanel(HolywardSpellTimerButton)
+					end
+				else
+					if HolywardSpellTimerButton and HolywardSpellTimerButton:IsVisible() then
+						HideUIPanel(HolywardSpellTimerButton)
+					end
+				end
+			end,
+		},
 		showTimers = {
 			type = "toggle", order = 2, width = "full",
 			name = "Show the active timer list",
