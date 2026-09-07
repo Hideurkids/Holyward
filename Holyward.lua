@@ -435,6 +435,39 @@ function Holyward_CachedGlobal(name)
 	return frame
 end
 
+-- PERFORMANCE (2026-09-10, per the user's pfDebug report -- HolywardButton:OnUpdate() was the
+-- highest memory consumer of every addon installed): the comment above already flagged "string
+-- concats" as part of the ~150-lookups-a-second cost, but only the getglobal() half ever actually
+-- got fixed (Holyward_CachedGlobal above) -- every call site still built a fresh
+-- "prefix"..slot.."suffix" STRING every single time just to have a key to look up with, and that
+-- concatenation itself allocates a new string on EVERY call, hit or miss, since the key has to
+-- exist before it can be looked up at all. This skips the string entirely on a cache hit: `prefix`
+-- and `suffix` are passed as separate, already-existing string values (Lua reuses identical string
+-- literals within one compiled chunk, so passing "HolywardBuffTracker" as its own argument doesn't
+-- allocate anything new), and `slot` is a plain number (never allocates) -- only the very FIRST
+-- lookup for a given (prefix, suffix, slot) triple ever concatenates or calls getglobal, same as
+-- Holyward_CachedGlobal's own one-time-per-name behavior above.
+local HOLYWARD_SLOT_GLOBAL_CACHE = {}
+function Holyward_CachedSlotGlobal(prefix, slot, suffix)
+	suffix = suffix or ""
+	local byPrefix = HOLYWARD_SLOT_GLOBAL_CACHE[prefix]
+	if not byPrefix then
+		byPrefix = {}
+		HOLYWARD_SLOT_GLOBAL_CACHE[prefix] = byPrefix
+	end
+	local bySuffix = byPrefix[suffix]
+	if not bySuffix then
+		bySuffix = {}
+		byPrefix[suffix] = bySuffix
+	end
+	local frame = bySuffix[slot]
+	if frame == nil then
+		frame = getglobal(prefix .. slot .. suffix)
+		bySuffix[slot] = frame
+	end
+	return frame
+end
+
 ------------------------------------------------------------------------------------------------------
 -- TOOLTIP-SCAN HELPERS (used to resolve a buff/debuff's real display name from its internal name)
 ------------------------------------------------------------------------------------------------------
@@ -828,8 +861,19 @@ local function Holyward_BuffNameMatches(name, matchText, extraNames)
 	return extraNames and extraNames[name] or false
 end
 
-local function Holyward_CollectBuffMatches(matchText, extraNames)
-	local matches = {}
+-- PERFORMANCE (2026-09-10, per the user's pfDebug report -- HolywardButton:OnUpdate() was the
+-- highest memory consumer of every addon installed): used to build a brand new `matches` array AND
+-- a brand new `{ name=, icon=, ... }` record table for EVERY matched buff, via table.insert, on
+-- EVERY call -- called once a second, forever, for every enabled Group slot (Elixir, Blessings) via
+-- Holyward_UpdateBuffTracker. `into`, when given, is a persistent table the caller keeps across
+-- calls (HolywardBuffGroupMatchesCache below, one per slot) -- existing record tables are reused BY
+-- POSITION (their fields overwritten in place) instead of thrown away and recreated, so a call that
+-- finds the same number of matches as last time allocates nothing at all. Any leftover records past
+-- the new count are trimmed (table.remove, not just left dangling) so table.getn(matches) stays
+-- accurate for callers.
+local function Holyward_CollectBuffMatches(matchText, extraNames, into)
+	local matches = into or {}
+	local count = 0
 	if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
 		local index = 1
 		while true do
@@ -838,21 +882,42 @@ local function Holyward_CollectBuffMatches(matchText, extraNames)
 				break
 			end
 			if data.name and Holyward_BuffNameMatches(data.name, matchText, extraNames) then
-				table.insert(matches, { name = data.name, icon = data.icon, expiration = data.expirationTime, index = index })
+				count = count + 1
+				local record = matches[count]
+				if not record then
+					record = {}
+					matches[count] = record
+				end
+				record.name = data.name
+				record.icon = data.icon
+				record.expiration = data.expirationTime
+				record.index = index
 			end
 			index = index + 1
 		end
-		return matches
-	end
-	local index = 1
-	while UnitBuff("player", index) do
-		Holyward_MoneyToggle()
-		HolywardTooltip:SetUnitBuff("player", index)
-		local buffName = tostring(HolywardTooltipTextLeft1:GetText())
-		if Holyward_BuffNameMatches(buffName, matchText, extraNames) then
-			table.insert(matches, { name = buffName, index = index })
+	else
+		local index = 1
+		while UnitBuff("player", index) do
+			Holyward_MoneyToggle()
+			HolywardTooltip:SetUnitBuff("player", index)
+			local buffName = tostring(HolywardTooltipTextLeft1:GetText())
+			if Holyward_BuffNameMatches(buffName, matchText, extraNames) then
+				count = count + 1
+				local record = matches[count]
+				if not record then
+					record = {}
+					matches[count] = record
+				end
+				record.name = buffName
+				record.icon = nil
+				record.expiration = nil
+				record.index = index
+			end
+			index = index + 1
 		end
-		index = index + 1
+	end
+	while table.getn(matches) > count do
+		table.remove(matches)
 	end
 	return matches
 end
@@ -866,6 +931,10 @@ end
 local BuffGroupExpanded = {}
 local BuffGroupExpireAt = {}
 local BuffGroupPopups = {}
+-- One persistent matches-array per Group slot (2026-09-10, per the user's pfDebug report), reused
+-- across calls by Holyward_CollectBuffMatches below instead of a fresh table every second -- see
+-- that function's own comment.
+local HolywardBuffGroupMatchesCache = {}
 local HOLYWARD_BUFF_GROUP_POPUP_MAX = 8
 -- Auto-collapse an expanded group popup after this many seconds with no further toggle, so it
 -- doesn't sit open forever (per the user, 2026-08-24). Checked once a second from
@@ -1021,7 +1090,7 @@ local function Holyward_UpdateBuffGroupPopup(slot, matches)
 	end
 	BuffGroupLastShown[slot] = shown
 	local direction = HolywardConfig.BuffTrackerExpandDirection or "DOWN"
-	local slotFrame = Holyward_CachedGlobal("HolywardBuffTracker" .. slot)
+	local slotFrame = Holyward_CachedSlotGlobal("HolywardBuffTracker", slot)
 	for j = 1, HOLYWARD_BUFF_GROUP_POPUP_MAX, 1 do
 		local popup = Holyward_GetBuffGroupPopup(slot, j)
 		if popup then
@@ -1056,8 +1125,8 @@ function Holyward_UpdateBuffTracker()
 	Holyward_LayoutBuffTracker()
 	for slot = 1, table.getn(HOLYWARD_BUFF_TRACKER), 1 do
 		local category = HOLYWARD_BUFF_TRACKER[slot]
-		local icon = Holyward_CachedGlobal("HolywardBuffTracker" .. slot .. "Icon")
-		local text = Holyward_CachedGlobal("HolywardBuffTracker" .. slot .. "Text")
+		local icon = Holyward_CachedSlotGlobal("HolywardBuffTracker", slot, "Icon")
+		local text = Holyward_CachedSlotGlobal("HolywardBuffTracker", slot, "Text")
 		if category.Group and icon and text then
 			-- Grouped slot: count of active matches on the icon, left or right click to expand the
 			-- list. A disabled/hidden slot also collapses its popup, and an expanded one auto-
@@ -1068,7 +1137,8 @@ function Holyward_UpdateBuffTracker()
 			end
 			if HolywardConfig.BuffTrackerEnabled[slot] then
 				icon:SetTexture(category.Icon)
-				local matches = Holyward_CollectBuffMatches(category.Group, category.ExtraNames)
+				local matches = Holyward_CollectBuffMatches(category.Group, category.ExtraNames, HolywardBuffGroupMatchesCache[slot])
+				HolywardBuffGroupMatchesCache[slot] = matches
 				local count = table.getn(matches)
 				if count > 0 then
 					icon:SetVertexColor(1, 1, 1)
@@ -1183,9 +1253,9 @@ function Holyward_UpdateAbilityTracker()
 	for slot = 1, table.getn(HOLYWARD_ABILITY_TRACKER), 1 do
 		local spellIndex = HOLYWARD_ABILITY_TRACKER[slot]
 		local entry = HOLYWARD_SPELL_TABLE[spellIndex]
-		local slotFrame = Holyward_CachedGlobal("HolywardAbilityTracker" .. slot)
-		local icon = Holyward_CachedGlobal("HolywardAbilityTracker" .. slot .. "Icon")
-		local text = Holyward_CachedGlobal("HolywardAbilityTracker" .. slot .. "Text")
+		local slotFrame = Holyward_CachedSlotGlobal("HolywardAbilityTracker", slot)
+		local icon = Holyward_CachedSlotGlobal("HolywardAbilityTracker", slot, "Icon")
+		local text = Holyward_CachedSlotGlobal("HolywardAbilityTracker", slot, "Text")
 		local glow = slotFrame and slotFrame.holywardGlow
 
 		if icon and text and glow and HolywardConfig.AbilityTrackerEnabled[slot] then
@@ -1539,7 +1609,7 @@ local function Holyward_LayoutTrackerGrid(slotPrefix, containerName, count, perR
 	local placed = 0
 	for k = 1, count, 1 do
 		local i = orderArray and orderArray[k] or k
-		local slot = i and Holyward_CachedGlobal(slotPrefix .. i)
+		local slot = i and Holyward_CachedSlotGlobal(slotPrefix, i)
 		if slot then
 			if not enabledArray or enabledArray[i] then
 				placed = placed + 1
@@ -1560,7 +1630,7 @@ local function Holyward_LayoutTrackerGrid(slotPrefix, containerName, count, perR
 				slot:SetWidth(iconSize)
 				slot:SetHeight(iconSize)
 				if innerIconRatio then
-					local inner = Holyward_CachedGlobal(slotPrefix .. i .. "Icon")
+					local inner = Holyward_CachedSlotGlobal(slotPrefix, i, "Icon")
 					if inner then
 						inner:SetWidth(floor(iconSize * innerIconRatio))
 						inner:SetHeight(floor(iconSize * innerIconRatio))
@@ -2959,7 +3029,7 @@ local function Holyward_UpdateCooldownIcons(spellList, iconPrefix)
 	for slot = 1, table.getn(spellList), 1 do
 		local id = HOLYWARD_SPELL_TABLE[spellList[slot]].ID
 		if id then
-			local button = Holyward_CachedGlobal(iconPrefix .. slot)
+			local button = Holyward_CachedSlotGlobal(iconPrefix, slot)
 			local icon = button and button:GetNormalTexture()
 			if icon then
 				local start, duration = GetSpellCooldown(id, BOOKTYPE_SPELL)
