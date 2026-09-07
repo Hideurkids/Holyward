@@ -33,28 +33,46 @@ function Holyward_Msg(msg, msgType)
 	end
 end
 
+-- PERFORMANCE (2026-09-10, per the user's pfDebug report -- HolywardButton:OnUpdate() was the
+-- single highest memory consumer of every addon installed, 17244 kB): this used to be 20 CHAINED
+-- string.gsub calls, each one scanning and copying the ENTIRE string top to bottom regardless of
+-- whether it actually found anything to replace -- string.gsub always builds and returns a new
+-- string via its internal buffer, even on zero matches. Called once a second from the timer sweep
+-- (Holyward_OnUpdate's UpdateStage 4, via Holyward_DisplayTimer's output) for as long as the
+-- session runs, that's up to 20 full-string copies every single second, forever -- a real, sustained
+-- memory-churn source, not a one-off cost. A single gsub with a lookup TABLE as the replacement
+-- (standard Lua string library behavior: the matched substring is used as a key into the table: a
+-- present, truthy value replaces the match, nil/false leaves it unchanged) does the exact same
+-- substitutions in ONE pass over the string instead of 20. `<%a+%d?>` matches every tag this table
+-- actually defines (one or more letters, optionally followed by a single trailing digit, e.g.
+-- "lightGreen2") and nothing else that wasn't already being left alone before.
+local HOLYWARD_COLOR_TAGS = {
+	["<white>"] = "|CFFFFFFFF",
+	["<lightBlue>"] = "|CFF99CCFF",
+	["<brightGreen>"] = "|CFF00FF00",
+	["<lightGreen2>"] = "|CFF66FF66",
+	["<lightGreen1>"] = "|CFF99FF66",
+	["<yellowGreen>"] = "|CFFCCFF66",
+	["<lightYellow>"] = "|CFFFFFF66",
+	["<darkYellow>"] = "|CFFFFCC00",
+	["<lightOrange>"] = "|CFFFFCC66",
+	["<dirtyOrange>"] = "|CFFFF9933",
+	["<darkOrange>"] = "|CFFFF6600",
+	["<redOrange>"] = "|CFFFF3300",
+	["<red>"] = "|CFFFF0000",
+	["<lightRed>"] = "|CFFFF5555",
+	["<lightPurple1>"] = "|CFFFFC4FF",
+	["<lightPurple2>"] = "|CFFFF99FF",
+	["<purple>"] = "|CFFFF50FF",
+	["<darkPurple1>"] = "|CFFFF00FF",
+	["<darkPurple2>"] = "|CFFB700B7",
+	["<close>"] = "|r",
+}
+
 function Holyward_MsgAddColor(msg)
-	msg = string.gsub(msg, "<white>", "|CFFFFFFFF")
-	msg = string.gsub(msg, "<lightBlue>", "|CFF99CCFF")
-	msg = string.gsub(msg, "<brightGreen>", "|CFF00FF00")
-	msg = string.gsub(msg, "<lightGreen2>", "|CFF66FF66")
-	msg = string.gsub(msg, "<lightGreen1>", "|CFF99FF66")
-	msg = string.gsub(msg, "<yellowGreen>", "|CFFCCFF66")
-	msg = string.gsub(msg, "<lightYellow>", "|CFFFFFF66")
-	msg = string.gsub(msg, "<darkYellow>", "|CFFFFCC00")
-	msg = string.gsub(msg, "<lightOrange>", "|CFFFFCC66")
-	msg = string.gsub(msg, "<dirtyOrange>", "|CFFFF9933")
-	msg = string.gsub(msg, "<darkOrange>", "|CFFFF6600")
-	msg = string.gsub(msg, "<redOrange>", "|CFFFF3300")
-	msg = string.gsub(msg, "<red>", "|CFFFF0000")
-	msg = string.gsub(msg, "<lightRed>", "|CFFFF5555")
-	msg = string.gsub(msg, "<lightPurple1>", "|CFFFFC4FF")
-	msg = string.gsub(msg, "<lightPurple2>", "|CFFFF99FF")
-	msg = string.gsub(msg, "<purple>", "|CFFFF50FF")
-	msg = string.gsub(msg, "<darkPurple1>", "|CFFFF00FF")
-	msg = string.gsub(msg, "<darkPurple2>", "|CFFB700B7")
-	msg = string.gsub(msg, "<close>", "|r")
-	return msg
+	-- Wrapped in parens to keep only gsub's first return value (the string) -- it also returns the
+	-- match count as a second value, which callers here never expect.
+	return (string.gsub(msg, "<%a+%d?>", HOLYWARD_COLOR_TAGS))
 end
 
 function HolywardTimerColor(percent)

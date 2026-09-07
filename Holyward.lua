@@ -1972,7 +1972,13 @@ end
 
 local LastFullUpdate = 0
 local UpdateStage = 0
-local textTimersDisplay = ""
+-- PERFORMANCE (2026-09-10, per the user's pfDebug report): was a plain string, rebuilt via
+-- `display = display .. x` inside Holyward_DisplayTimer's loop -- every one of those concatenations
+-- copies the WHOLE accumulated string so far into a brand new string object (Lua strings are
+-- immutable), once per active timer, every second, for the life of the session. A reused TABLE
+-- collects the same pieces via table.insert (O(1) amortized, no re-copying), joined into the final
+-- string with ONE table.concat after the sweep loop finishes instead of during it.
+local textTimersParts = {}
 
 function Holyward_OnUpdate()
 	if (not Loaded) and UnitClass("player") ~= HOLYWARD_UNIT_PRIEST then
@@ -2068,12 +2074,14 @@ function Holyward_OnUpdate()
 		UpdateStage = 4
 	elseif UpdateStage == 4 then
 		ClearGraphicalTimers()
-		textTimersDisplay = ""
+		while table.getn(textTimersParts) > 0 do
+			table.remove(textTimersParts)
+		end
 		for index = 1, table.getn(SpellTimer), 1 do
 			if SpellTimer[index] then
 				if curTime <= SpellTimer[index].TimeMax then
-					textTimersDisplay, SpellGroup, GraphicalTimer, TimerTable =
-						Holyward_DisplayTimer(textTimersDisplay, index, SpellGroup, SpellTimer, GraphicalTimer, TimerTable)
+					textTimersParts, SpellGroup, GraphicalTimer, TimerTable =
+						Holyward_DisplayTimer(textTimersParts, index, SpellGroup, SpellTimer, GraphicalTimer, TimerTable)
 				end
 
 				if curTime >= (SpellTimer[index].TimeMax - 0.5) then
@@ -2107,8 +2115,12 @@ function Holyward_OnUpdate()
 
 		if HolywardConfig.ShowSpellTimers or HolywardConfig.Graphical then
 			if not HolywardConfig.Graphical then
-				textTimersDisplay = Holyward_MsgAddColor(textTimersDisplay)
-				HolywardListSpells:SetText(textTimersDisplay)
+				-- Built once here, not accumulated during the sweep loop above -- see textTimersParts'
+				-- own comment. Also means this join (and the MsgAddColor pass) is skipped entirely
+				-- when Graphical is on, since nothing below ever reads it in that mode -- the OLD code
+				-- built the full string unconditionally every tick even in Graphical mode, purely wasted
+				-- work.
+				HolywardListSpells:SetText(Holyward_MsgAddColor(table.concat(textTimersParts)))
 			else
 				HolywardListSpells:SetText("")
 			end

@@ -150,9 +150,17 @@ end
 -- DISPLAY STRING BUILDER
 ------------------------------------------------------------------------------------------------------
 
-function Holyward_DisplayTimer(display, index, SpellGroup, SpellTimer, GraphicalTimer, TimerTable)
+-- PERFORMANCE (2026-09-10, per the user's pfDebug report -- HolywardButton:OnUpdate() was the
+-- highest memory consumer of every addon installed, 17244 kB): `display` used to be a plain string,
+-- rebuilt via `display = display .. x` -- every concatenation copies the WHOLE string accumulated so
+-- far into a new string object (Lua strings are immutable), and this function runs once per active
+-- timer, every second, for the life of the session. Now takes/returns a TABLE instead
+-- (`displayParts`) -- table.insert is O(1) amortized, no re-copying -- and the caller
+-- (Holyward_OnUpdate's stage 4) joins it into the final string ONCE with table.concat after the
+-- whole sweep loop finishes, not once per timer during it.
+function Holyward_DisplayTimer(displayParts, index, SpellGroup, SpellTimer, GraphicalTimer, TimerTable)
 	if not SpellTimer then
-		return display, SpellGroup
+		return displayParts, SpellGroup
 	end
 
 	local minutes = 0
@@ -167,12 +175,14 @@ function Holyward_DisplayTimer(display, index, SpellGroup, SpellTimer, Graphical
 		and SpellGroup.SubName[SpellTimer[index].Group] ~= nil
 		and SpellGroup.Name[SpellTimer[index].Group] ~= nil
 	then
-		display = display
-			.. "<purple>-------------------------------\n"
-			.. SpellGroup.Name[SpellTimer[index].Group]
-			.. " "
-			.. SpellGroup.SubName[SpellTimer[index].Group]
-			.. "\n-------------------------------<close>\n"
+		table.insert(
+			displayParts,
+			"<purple>-------------------------------\n"
+				.. SpellGroup.Name[SpellTimer[index].Group]
+				.. " "
+				.. SpellGroup.SubName[SpellTimer[index].Group]
+				.. "\n-------------------------------<close>\n"
+		)
 		table.insert(
 			GraphicalTimer.texte,
 			SpellGroup.Name[SpellTimer[index].Group] .. " " .. SpellGroup.SubName[SpellTimer[index].Group]
@@ -203,7 +213,7 @@ function Holyward_DisplayTimer(display, index, SpellGroup, SpellTimer, Graphical
 	else
 		affichage = affichage .. "0" .. seconds
 	end
-	display = display .. "<white>" .. affichage .. " - <close>"
+	table.insert(displayParts, "<white>" .. affichage .. " - <close>")
 
 	if SpellTimer[index].Type == 1 and SpellTimer[index].Target ~= "" then
 		if HolywardConfig.SpellTimerPos == 1 then
@@ -220,11 +230,11 @@ function Holyward_DisplayTimer(display, index, SpellGroup, SpellTimer, Graphical
 	table.insert(GraphicalTimer.Gtimer, SpellTimer[index].Gtimer)
 	table.insert(GraphicalTimer.icon, SpellTimer[index].Icon)
 
-	display = display .. color .. SpellTimer[index].Name .. "<close><white>"
+	table.insert(displayParts, color .. SpellTimer[index].Name .. "<close><white>")
 	if SpellTimer[index].Type == 1 and SpellTimer[index].Target ~= "" then
-		display = display .. " - " .. SpellTimer[index].Target .. "<close>\n"
+		table.insert(displayParts, " - " .. SpellTimer[index].Target .. "<close>\n")
 	else
-		display = display .. "<close>\n"
+		table.insert(displayParts, "<close>\n")
 	end
 
 	-- HolywardAfficheTimer is NOT called here anymore (2026-08-24 fix): this function runs once PER
@@ -234,5 +244,5 @@ function Holyward_DisplayTimer(display, index, SpellGroup, SpellTimer, Graphical
 	-- calls per row, not cheap Lua ops. The caller (Holyward_OnUpdate's stage 4) now renders once,
 	-- after this loop has finished building the complete list for the tick.
 
-	return display, SpellGroup, GraphicalTimer, TimerTable
+	return displayParts, SpellGroup, GraphicalTimer, TimerTable
 end
